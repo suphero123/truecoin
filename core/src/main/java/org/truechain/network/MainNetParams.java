@@ -1,5 +1,6 @@
 package org.truechain.network;
 
+import org.truechain.message.DefaultMessageSerializer;
 import org.truechain.message.MessageSerializer;
 
 public class MainNetParams extends NetworkParameters {
@@ -25,12 +26,12 @@ public class MainNetParams extends NetworkParameters {
     
 	@Override
 	public int getProtocolVersionNum(ProtocolVersion version) {
-		return 0;
+		return version.getVersion();
 	}
 
 	@Override
 	public MessageSerializer getSerializer(boolean parseRetain) {
-		return null;
+		return new DefaultMessageSerializer(this);
 	}
 
 }

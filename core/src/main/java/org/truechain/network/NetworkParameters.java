@@ -8,6 +8,7 @@ public abstract class NetworkParameters {
 	
 	//端口
 	protected int port;
+	protected long packetMagic;
 	
 	protected transient MessageSerializer defaultSerializer = null;
 	
@@ -43,14 +44,14 @@ public abstract class NetworkParameters {
 	public static enum ProtocolVersion {
         CURRENT(1);
 
-        private final int bitcoinProtocol;
+        private final int version;
 
-        ProtocolVersion(final int bitcoinProtocol) {
-            this.bitcoinProtocol = bitcoinProtocol;
+        ProtocolVersion(final int version) {
+            this.version = version;
         }
 
-        public int getBitcoinProtocolVersion() {
-            return bitcoinProtocol;
+        public int getVersion() {
+            return version;
         }
     }
 
@@ -61,4 +62,8 @@ public abstract class NetworkParameters {
 	public SeedManager getSeedManager() {
 		return seedManager;
 	}
+	
+	public long getPacketMagic() {
+        return packetMagic;
+    }
 }

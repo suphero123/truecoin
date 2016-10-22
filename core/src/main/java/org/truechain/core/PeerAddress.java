@@ -23,10 +23,10 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.ProtocolException;
 import java.net.UnknownHostException;
 import java.util.Objects;
 
+import org.truechain.core.exception.ProtocolException;
 import org.truechain.message.Message;
 import org.truechain.message.MessageSerializer;
 import org.truechain.network.MainNetParams;
@@ -43,6 +43,8 @@ public class PeerAddress extends Message {
 
     static final int MESSAGE_SIZE = 30;
 
+	private static final BigInteger DEFAULT_SERVICE = BigInteger.ONE;
+
     private InetAddress addr;
     private String hostname; // Used for .onion addresses
     private int port;
@@ -57,27 +59,14 @@ public class PeerAddress extends Message {
     }
 
     /**
-     * Construct a peer address from a serialized payload.
-     * @param params NetworkParameters object.
-     * @param payload Bitcoin protocol formatted byte array containing message content.
-     * @param offset The location of the first payload byte within the array.
-     * @param protocolVersion Bitcoin protocol version.
-     * @param serializer the serializer to use for this message.
-     * @throws ProtocolException
-     */
-    public PeerAddress(NetworkParameters params, byte[] payload, int offset, int protocolVersion, Message parent, MessageSerializer serializer) throws ProtocolException {
-    	
-    }
-
-    /**
      * Construct a peer address from a memorized or hardcoded address.
      */
     public PeerAddress(InetAddress addr, int port, int protocolVersion) {
         this.addr = Utils.checkNotNull(addr);
         this.port = port;
         this.protocolVersion = protocolVersion;
-        this.services = BigInteger.ZERO;
-        length = protocolVersion > 31402 ? MESSAGE_SIZE : MESSAGE_SIZE - 4;
+        this.services = DEFAULT_SERVICE;
+        length = MESSAGE_SIZE;
     }
 
     /**
@@ -85,7 +74,7 @@ public class PeerAddress extends Message {
      * for Bitcoin.
      */
     public PeerAddress(InetAddress addr, int port) {
-        this(addr, port, NetworkParameters.ProtocolVersion.CURRENT.getBitcoinProtocolVersion());
+        this(addr, port, NetworkParameters.ProtocolVersion.CURRENT.getVersion());
     }
 
     /**
@@ -118,7 +107,7 @@ public class PeerAddress extends Message {
      * for Bitcoin.
      */
     public PeerAddress(InetSocketAddress addr) {
-        this(addr.getAddress(), addr.getPort(), NetworkParameters.ProtocolVersion.CURRENT.getBitcoinProtocolVersion());
+        this(addr.getAddress(), addr.getPort(), NetworkParameters.ProtocolVersion.CURRENT.getVersion());
     }
 
     /**
@@ -136,7 +125,7 @@ public class PeerAddress extends Message {
     public PeerAddress(String hostname, int port) {
         this.hostname = hostname;
         this.port = port;
-        this.protocolVersion = NetworkParameters.ProtocolVersion.CURRENT.getBitcoinProtocolVersion();
+        this.protocolVersion = NetworkParameters.ProtocolVersion.CURRENT.getVersion();
         this.services = BigInteger.ZERO;
     }
 
@@ -167,10 +156,7 @@ public class PeerAddress extends Message {
         //   uint64 services   (flags determining what the node can do)
         //   16 bytes ip address
         //   2 bytes port num
-        if (protocolVersion > 31402)
-            time = readUint32();
-        else
-            time = -1;
+        time = readUint32();
         services = readUint64();
         byte[] addrBytes = readBytes(16);
         try {
@@ -180,9 +166,30 @@ public class PeerAddress extends Message {
         }
         port = ((0xFF & payload[cursor++]) << 8) | (0xFF & payload[cursor++]);
         // The 4 byte difference is the uint32 timestamp that was introduced in version 31402 
-        length = protocolVersion > 31402 ? MESSAGE_SIZE : MESSAGE_SIZE - 4;
+        length = MESSAGE_SIZE;
     }
 
+    @Override
+	public void serializeToStream(OutputStream stream) throws IOException {
+        int secs = (int) (Utils.currentTimeSeconds());
+        Utils.uint32ToByteStreamLE(secs, stream);
+        
+        Utils.uint64ToByteStreamLE(services, stream);  // nServices.
+        // Java does not provide any utility to map an IPv4 address into IPv6 space, so we have to do it by hand.
+        byte[] ipBytes = addr.getAddress();
+        if (ipBytes.length == 4) {
+            byte[] v6addr = new byte[16];
+            System.arraycopy(ipBytes, 0, v6addr, 12, 4);
+            v6addr[10] = (byte) 0xFF;
+            v6addr[11] = (byte) 0xFF;
+            ipBytes = v6addr;
+        }
+        stream.write(ipBytes);
+        // And write out the port. Unlike the rest of the protocol, address and port is in big endian byte order.
+        stream.write((byte) (0xFF & port >> 8));
+        stream.write((byte) (0xFF & port));
+    }
+    
     public String getHostname() {
         return hostname;
     }

@@ -39,6 +39,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.slf4j.LoggerFactory;
 import org.truechain.core.Peer;
+import org.truechain.core.PeerAddress;
+import org.truechain.network.NetworkParameters;
 import org.truechain.network.Seed;
 import org.truechain.utils.ContextPropagatingThreadFactory;
 import org.truechain.utils.Utils;
@@ -50,6 +52,8 @@ import org.truechain.utils.Utils;
 public class NioClientManager implements ClientConnectionManager {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(NioClientManager.class);
 
+    private final NetworkParameters network;
+    
     private final Selector selector;
     
     private final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
@@ -58,6 +62,31 @@ public class NioClientManager implements ClientConnectionManager {
     private NewInConnectionListener newInConnectionListener;
     
     private boolean isServer = false; //是否启动本地监听服务 ， SPV就不需要
+    
+    public NioClientManager(NetworkParameters network, boolean isServer, int port) {
+    	try {
+    		this.network = Utils.checkNotNull(network);
+    		this.isServer = isServer;
+    		
+            selector = SelectorProvider.provider().openSelector();
+            if(this.isServer) {
+	            // 打开服务器套接字通道  
+	            ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();  
+	            // 服务器配置为非阻塞  
+	            serverSocketChannel.configureBlocking(false);  
+	            // 检索与此通道关联的服务器套接字  
+	            ServerSocket serverSocket = serverSocketChannel.socket();  
+	            // 进行服务的绑定  
+	            serverSocket.bind(new InetSocketAddress(port));  
+	            // 注册到selector，等待连接  
+	            serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);  
+	            log.info("Server Start on port {}:", port);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e); // Shouldn't ever happen
+        }
+	}
+
     
     class PendingConnect {
         SocketChannel sc;
@@ -118,7 +147,7 @@ public class NioClientManager implements ClientConnectionManager {
             		SelectionKey newKey = socketChannel.register(selector, SelectionKey.OP_READ);
 //            		key.cancel();
             		
-            		Peer peer = new Peer() {
+            		Peer peer = new Peer(network, new PeerAddress((InetSocketAddress)socketChannel.getRemoteAddress())) {
                 		@Override
                 		public void connectionClosed() {
                 			if(newInConnectionListener != null) 
@@ -140,29 +169,6 @@ public class NioClientManager implements ClientConnectionManager {
         	ConnectionHandler.handleKey(key);
         }
     }
-
-    public NioClientManager(boolean isServer, int port) {
-    	try {
-    		this.isServer = isServer;
-    		
-            selector = SelectorProvider.provider().openSelector();
-            if(this.isServer) {
-	            // 打开服务器套接字通道  
-	            ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();  
-	            // 服务器配置为非阻塞  
-	            serverSocketChannel.configureBlocking(false);  
-	            // 检索与此通道关联的服务器套接字  
-	            ServerSocket serverSocket = serverSocketChannel.socket();  
-	            // 进行服务的绑定  
-	            serverSocket.bind(new InetSocketAddress(port));  
-	            // 注册到selector，等待连接  
-	            serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);  
-	            log.info("Server Start on port {}:", port);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e); // Shouldn't ever happen
-        }
-	}
 
 	@Override
     public void start() {

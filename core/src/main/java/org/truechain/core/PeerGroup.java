@@ -50,7 +50,7 @@ public class PeerGroup implements TransactionBroadcaster {
 	public PeerGroup(NetworkParameters params,int maxConnectionCount) {
 		this.network = params;
 		this.maxConnectionCount = maxConnectionCount;
-		this.connectionManager = new NioClientManager(true, params.getPort());
+		this.connectionManager = new NioClientManager(params, true, params.getPort());
 		connectionManager.setNewInConnectionListener(new NewInConnectionListener() {
 			@Override
 			public boolean allowConnection() {
@@ -59,12 +59,12 @@ public class PeerGroup implements TransactionBroadcaster {
 			@Override
 			public void connectionOpened(Peer peer) {
 				inPeers.add(peer);
-				log.info("新连接，当前流入"+inPeers.size()+"个节点 ，最大允许"+PeerGroup.this.maxConnectionCount+"个节点 ");
+				log.info("新连接{}，当前流入"+inPeers.size()+"个节点 ，最大允许"+PeerGroup.this.maxConnectionCount+"个节点 ", peer.getPeerAddress().getSocketAddress());
 			}
 			@Override
 			public void connectionClosed(Peer peer) {
 				inPeers.remove(peer);
-				log.info("连接关闭，当前流入"+inPeers.size()+"个节点 ，最大允许"+PeerGroup.this.maxConnectionCount+"个节点 ");
+				log.info("连接关闭{}，当前流入"+inPeers.size()+"个节点 ，最大允许"+PeerGroup.this.maxConnectionCount+"个节点 ", peer.getPeerAddress().getSocketAddress());
 			}
 		});
 	}
@@ -118,17 +118,15 @@ public class PeerGroup implements TransactionBroadcaster {
 				if(seedManager.hasMore()) {
 					List<Seed> seeds = network.getSeedManager().getSeedList(maxConnectionCount);
 					for (Seed seed : seeds) {
-						Peer peer = new Peer() {
+						Peer peer = new Peer(network, seed.getAddress()) {
 							@Override
 							public void connectionOpened() {
 								super.connectionOpened();
-								
 								outPeers.add(this);
 							}
 							@Override
 							public void connectionClosed() {
 								super.connectionClosed();
-								
 								outPeers.remove(this);
 							}
 						};
@@ -152,12 +150,11 @@ public class PeerGroup implements TransactionBroadcaster {
 		while(retryCount-- > 0) {
 			if(inPeers.size() > 0 || outPeers.size() > 0) {
 				for (Peer peer : inPeers) {
-					peer.sendMessage(("in hello:"+System.currentTimeMillis()).getBytes());
+					peer.sendMessage(tx);
 				}
 				for (Peer peer : outPeers) {
-					peer.sendMessage(("out hello:"+System.currentTimeMillis()).getBytes());
+					peer.sendMessage(tx);
 				}
-				
 				return null;
 			}
 			try{

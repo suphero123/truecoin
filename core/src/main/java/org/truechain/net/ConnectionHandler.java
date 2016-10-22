@@ -229,9 +229,9 @@ class ConnectionHandler implements MessageWriteTarget {
             if (key.isReadable()) {
                 // Do a socket read and invoke the connection's receiveBytes message
                 int read = handler.channel.read(handler.readBuff);
-                if (read == 0)
+                if (read == 0) {
                     return; // Was probably waiting on a write
-                else if (read == -1) { // Socket was closed
+                } else if (read == -1) { // Socket was closed
                     key.cancel();
                     handler.closeConnection();
                     return;

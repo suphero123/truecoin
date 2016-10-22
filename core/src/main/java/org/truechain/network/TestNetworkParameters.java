@@ -13,7 +13,7 @@ public class TestNetworkParameters extends NetworkParameters {
 
 	@Override
 	public MessageSerializer getSerializer(boolean parseRetain) {
-		return new DefaultMessageSerializer();
+		return new DefaultMessageSerializer(this);
 	}
 
 }

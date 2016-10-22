@@ -1,7 +1,28 @@
 package org.truechain.utils;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+
 public class Utils {
 
+	public static String toString(byte[] bytes, String charsetName) {
+        try {
+            return new String(bytes, charsetName);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+	
+    public static byte[] toBytes(CharSequence str, String charsetName) {
+        try {
+            return str.toString().getBytes(charsetName);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
 	/**
      * Returns a copy of the given byte array in reverse order.
      */
@@ -40,6 +61,62 @@ public class Utils {
         return out;
     }
 	
+	public static void uint32ToByteArrayBE(long val, byte[] out, int offset) {
+        out[offset] = (byte) (0xFF & (val >> 24));
+        out[offset + 1] = (byte) (0xFF & (val >> 16));
+        out[offset + 2] = (byte) (0xFF & (val >> 8));
+        out[offset + 3] = (byte) (0xFF & val);
+    }
+
+    public static void uint32ToByteArrayLE(long val, byte[] out, int offset) {
+        out[offset] = (byte) (0xFF & val);
+        out[offset + 1] = (byte) (0xFF & (val >> 8));
+        out[offset + 2] = (byte) (0xFF & (val >> 16));
+        out[offset + 3] = (byte) (0xFF & (val >> 24));
+    }
+
+    public static void uint64ToByteArrayLE(long val, byte[] out, int offset) {
+        out[offset] = (byte) (0xFF & val);
+        out[offset + 1] = (byte) (0xFF & (val >> 8));
+        out[offset + 2] = (byte) (0xFF & (val >> 16));
+        out[offset + 3] = (byte) (0xFF & (val >> 24));
+        out[offset + 4] = (byte) (0xFF & (val >> 32));
+        out[offset + 5] = (byte) (0xFF & (val >> 40));
+        out[offset + 6] = (byte) (0xFF & (val >> 48));
+        out[offset + 7] = (byte) (0xFF & (val >> 56));
+    }
+
+    public static void uint32ToByteStreamLE(long val, OutputStream stream) throws IOException {
+        stream.write((int) (0xFF & val));
+        stream.write((int) (0xFF & (val >> 8)));
+        stream.write((int) (0xFF & (val >> 16)));
+        stream.write((int) (0xFF & (val >> 24)));
+    }
+    
+    public static void int64ToByteStreamLE(long val, OutputStream stream) throws IOException {
+        stream.write((int) (0xFF & val));
+        stream.write((int) (0xFF & (val >> 8)));
+        stream.write((int) (0xFF & (val >> 16)));
+        stream.write((int) (0xFF & (val >> 24)));
+        stream.write((int) (0xFF & (val >> 32)));
+        stream.write((int) (0xFF & (val >> 40)));
+        stream.write((int) (0xFF & (val >> 48)));
+        stream.write((int) (0xFF & (val >> 56)));
+    }
+
+    public static void uint64ToByteStreamLE(BigInteger val, OutputStream stream) throws IOException {
+        byte[] bytes = val.toByteArray();
+        if (bytes.length > 8) {
+            throw new RuntimeException("Input too large to encode into a uint64");
+        }
+        bytes = reverseBytes(bytes);
+        stream.write(bytes);
+        if (bytes.length < 8) {
+            for (int i = 0; i < 8 - bytes.length; i++)
+                stream.write(0);
+        }
+    }
+
 	public static <T> T checkNotNull(T t) {
 		if(t == null) {
 			throw new NullPointerException();
@@ -67,5 +144,9 @@ public class Utils {
 			}
 			throw new RuntimeException(msg);
 		}
+	}
+
+	public static long currentTimeSeconds() {
+		return System.currentTimeMillis()/1000;
 	}
 }

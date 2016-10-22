@@ -4,14 +4,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
-import java.net.ProtocolException;
 import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.truechain.core.UnsafeByteArrayOutputStream;
+import org.truechain.core.VarInt;
+import org.truechain.core.exception.ProtocolException;
 import org.truechain.network.NetworkParameters;
-import org.truechain.utils.BaseEncoding.Base16;
+import org.truechain.network.NetworkParameters.ProtocolVersion;
+import org.truechain.utils.Base16;
 import org.truechain.utils.Utils;
 
 public abstract class Message {
@@ -19,6 +21,8 @@ public abstract class Message {
 	private static final Logger log = LoggerFactory.getLogger(Message.class);
 
 	public static final int MAX_SIZE = 0x02000000; // 32MB
+	public static final int HEADER_SIZE = 512+4;
+	
 	public static final int UNKNOWN_LENGTH = Integer.MIN_VALUE;
 
 	// Useful to ensure serialize/deserialize are consistent with each other.
@@ -46,6 +50,10 @@ public abstract class Message {
     protected Message(NetworkParameters params) {
         this.params = params;
         serializer = params.getDefaultSerializer();
+    }
+    
+    protected Message(NetworkParameters params, byte[] payload, int offset) throws ProtocolException {
+        this(params, payload, offset, params.getProtocolVersionNum(ProtocolVersion.CURRENT));
     }
 
     protected Message(NetworkParameters params, byte[] payload, int offset, int protocolVersion) throws ProtocolException {
@@ -170,15 +178,23 @@ public abstract class Message {
             stream.write(payload, offset, length);
             return;
         }
-
-        bitcoinSerializeToStream(stream);
+        serializeToStream(stream);
     }
 
     /**
      * Serializes this message to the provided stream. If you just want the raw bytes use bitcoinSerialize().
      */
-    protected void bitcoinSerializeToStream(OutputStream stream) throws IOException {
+    protected void serializeToStream(OutputStream stream) throws IOException {
         log.error("Error: {} class has not implemented bitcoinSerializeToStream method.  Generating message with no payload", getClass());
+    }
+    
+    /**
+     * This returns a correct value by parsing the message.
+     */
+    public final int getMessageSize() {
+        if (length == UNKNOWN_LENGTH)
+            Utils.checkState(false, "Length field has not been set in %s.", getClass().getSimpleName());
+        return length;
     }
     
     protected long readUint32() throws ProtocolException {
@@ -187,7 +203,7 @@ public abstract class Message {
             cursor += 4;
             return u;
         } catch (ArrayIndexOutOfBoundsException e) {
-            throw new ProtocolException();
+            throw new ProtocolException(e);
         }
     }
 
@@ -197,13 +213,27 @@ public abstract class Message {
             cursor += 8;
             return u;
         } catch (ArrayIndexOutOfBoundsException e) {
-            throw new ProtocolException();
+            throw new ProtocolException(e);
         }
     }
 
     protected BigInteger readUint64() throws ProtocolException {
         // Java does not have an unsigned 64 bit type. So scrape it off the wire then flip.
         return new BigInteger(Utils.reverseBytes(readBytes(8)));
+    }
+    
+    protected long readVarInt() throws ProtocolException {
+        return readVarInt(0);
+    }
+
+    protected long readVarInt(int offset) throws ProtocolException {
+        try {
+            VarInt varint = new VarInt(payload, cursor + offset);
+            cursor += offset + varint.getOriginalSizeInBytes();
+            return varint.value;
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new ProtocolException(e);
+        }
     }
     
     protected byte[] readBytes(int length) throws ProtocolException {
@@ -216,7 +246,16 @@ public abstract class Message {
             cursor += length;
             return b;
         } catch (IndexOutOfBoundsException e) {
-            throw new ProtocolException();
+            throw new ProtocolException(e);
         }
+    }
+    
+    protected boolean hasMoreBytes() {
+        return cursor < payload.length;
+    }
+    
+    protected String readStr() throws ProtocolException {
+        long length = readVarInt();
+        return length == 0 ? "" : Utils.toString(readBytes((int) length), "UTF-8"); // optimization for empty strings
     }
 }

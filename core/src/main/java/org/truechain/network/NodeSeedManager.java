@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 手动添加节点
+ * 配置节点
  * @author ln
  *
  */

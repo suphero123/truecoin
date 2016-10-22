@@ -18,11 +18,11 @@ public class PeerGroupTest {
 		
 		peerGroup.startSyn();
 		
-		try {
-			Thread.sleep(60000l);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		peerGroup.broadcastTransaction(new Transaction());
+//		try {
+//			Thread.sleep(10000l);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+//		peerGroup.broadcastTransaction(new Transaction());
 	}
 }

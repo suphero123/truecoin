@@ -1,7 +1,6 @@
 package org.truechain.core;
 
-import java.net.ProtocolException;
-
+import org.truechain.core.exception.ProtocolException;
 import org.truechain.message.Message;
 
 public class Transaction extends Message {
