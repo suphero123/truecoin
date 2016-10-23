@@ -66,4 +66,8 @@ public abstract class NetworkParameters {
 	public long getPacketMagic() {
         return packetMagic;
     }
+
+	public int getBestBlockHeight() {
+		return 1000;
+	}
 }

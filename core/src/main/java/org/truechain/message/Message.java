@@ -258,4 +258,12 @@ public abstract class Message {
         long length = readVarInt();
         return length == 0 ? "" : Utils.toString(readBytes((int) length), "UTF-8"); // optimization for empty strings
     }
+
+	public MessageSerializer getSerializer() {
+		return serializer;
+	}
+
+	public void setSerializer(MessageSerializer serializer) {
+		this.serializer = serializer;
+	}
 }

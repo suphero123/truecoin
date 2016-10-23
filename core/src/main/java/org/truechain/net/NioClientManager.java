@@ -148,6 +148,8 @@ public class NioClientManager implements ClientConnectionManager {
 //            		key.cancel();
             		
             		Peer peer = new Peer(network, new PeerAddress((InetSocketAddress)socketChannel.getRemoteAddress())) {
+            			@Override
+            			public void connectionOpened() {}
                 		@Override
                 		public void connectionClosed() {
                 			if(newInConnectionListener != null) 

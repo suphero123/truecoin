@@ -69,6 +69,9 @@ public abstract class PeerSocketHandler extends AbstractTimeoutHandler implement
         } finally {
             lock.unlock();
         }
+        if(message.getSerializer() == null) {
+        	message.setSerializer(serializer);
+        }
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
             serializer.serialize(message, out);

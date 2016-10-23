@@ -25,7 +25,10 @@ public class DefaultMessageSerializer extends MessageSerializer {
 	private static final Map<Class<? extends Message>, String> COMMANDS = new HashMap<Class<? extends Message>, String>();
 
     static {
+    	COMMANDS.put(PingMessage.class, "ping");
+    	COMMANDS.put(PongMessage.class, "pong");
     	COMMANDS.put(VersionMessage.class, "version");
+    	COMMANDS.put(VerackMessage.class, "verack");
     }
 
 	public DefaultMessageSerializer(NetworkParameters network) {
@@ -122,7 +125,11 @@ public class DefaultMessageSerializer extends MessageSerializer {
         if (command.equals("version")) {
         	message = new VersionMessage(network, payloadBytes);
         } else if (command.equals("verack")) {
-        	message = new VersionAck(network, payloadBytes);
+        	message = new VerackMessage(network, payloadBytes);
+        } else if (command.equals("ping")) {
+        	message = new PingMessage(network, payloadBytes);
+        } else if (command.equals("pong")) {
+        	message = new PongMessage(network, payloadBytes);
         } else {
         	log.warn("No support for deserializing message with name {}", command);
         	message = new UnknownMessage(network, command, payloadBytes);

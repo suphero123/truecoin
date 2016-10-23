@@ -80,8 +80,23 @@ public class PeerGroup implements TransactionBroadcaster {
 		
 		//初始化节点
 		initPeers();
+		
+		//ping task
+		startPingTask();
 	}
 	
+	//ping task
+	private void startPingTask() {
+		executor.scheduleWithFixedDelay(new Runnable() {
+			@Override
+			public void run() {
+				for (Peer peer : outPeers) {
+					peer.ping();
+				}
+			}
+		}, 0, 1, TimeUnit.SECONDS);
+	}
+
 	//初始化节点
 	private void initPeers() {
 		executor.scheduleWithFixedDelay(new PeerStatusManager(), 0, 10, TimeUnit.SECONDS);
