@@ -72,6 +72,8 @@ import org.truechain.crypto.TransactionSignature;
 import org.truechain.network.NetworkParameters;
 import org.truechain.utils.Base16;
 import org.truechain.utils.Ints;
+import org.truechain.utils.ToStringHelper;
+import org.truechain.utils.UnsafeComparator;
 import org.truechain.utils.Utils;
 
 import com.sun.istack.internal.Nullable;
@@ -108,6 +110,12 @@ import com.sun.istack.internal.Nullable;
  * can usually ignore the compressed/uncompressed distinction.</p>
  */
 public class ECKey implements EncryptableItem {
+	
+	public static void main(String[] args) {
+		ECKey eckey = new ECKey();
+		System.out.println(eckey.getPrivKey());
+	}
+	
     private static final Logger log = LoggerFactory.getLogger(ECKey.class);
 
     /** Sorts oldest keys first, newest last. */
@@ -124,14 +132,14 @@ public class ECKey implements EncryptableItem {
 
     /** Compares pub key bytes using {@link com.google.common.primitives.UnsignedBytes#lexicographicalComparator()} */
     public static final Comparator<ECKey> PUBKEY_COMPARATOR = new Comparator<ECKey>() {
-        private Comparator<byte[]> comparator = UnsignedBytes.lexicographicalComparator();
+        private Comparator<byte[]> comparator = UnsafeComparator.INSTANCE;
 
         @Override
         public int compare(ECKey k1, ECKey k2) {
             return comparator.compare(k1.getPubKey(), k2.getPubKey());
         }
     };
-
+    
     // The parameters of the secp256k1 curve that Bitcoin uses.
     private static final X9ECParameters CURVE_PARAMS = CustomNamedCurves.getByName("secp256k1");
 
@@ -1258,7 +1266,7 @@ public class ECKey implements EncryptableItem {
     }
 
     private String toString(boolean includePrivate, NetworkParameters params) {
-        final MoreObjects.ToStringHelper helper = MoreObjects.toStringHelper(this).omitNullValues();
+        final ToStringHelper helper = new ToStringHelper(getClass().getName()).omitNullValues();
         helper.add("pub HEX", getPublicKeyAsHex());
         if (includePrivate) {
             try {
