@@ -30,9 +30,9 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.annotation.Nullable;
-
 import org.slf4j.LoggerFactory;
+
+import com.sun.istack.internal.Nullable;
 
 import net.jcip.annotations.GuardedBy;
 

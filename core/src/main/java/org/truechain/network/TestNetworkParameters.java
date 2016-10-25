@@ -5,6 +5,14 @@ import org.truechain.message.MessageSerializer;
 
 public class TestNetworkParameters extends NetworkParameters {
 
+	private static TestNetworkParameters instance;
+    public static synchronized TestNetworkParameters get() {
+        if (instance == null) {
+            instance = new TestNetworkParameters();
+        }
+        return instance;
+    }
+    
 	@Override
 	public int getProtocolVersionNum(ProtocolVersion version) {
 		// TODO Auto-generated method stub

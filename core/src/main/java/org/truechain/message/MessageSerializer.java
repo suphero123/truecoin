@@ -20,10 +20,11 @@ package org.truechain.message;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.ProtocolException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
+import org.truechain.core.Transaction;
+import org.truechain.core.exception.ProtocolException;
 import org.truechain.utils.Utils;
 
 public abstract class MessageSerializer {
@@ -106,5 +107,10 @@ public abstract class MessageSerializer {
             System.arraycopy(header, cursor, checksum, 0, 4);
             cursor += 4;
         }
+    }
+    
+    public final Transaction makeTransaction(byte[] payloadBytes) throws ProtocolException, UnsupportedOperationException {
+    	//TODO
+        return null;
     }
 }

@@ -2,13 +2,28 @@ package org.truechain.network;
 
 import org.truechain.message.MessageSerializer;
 
+import com.sun.istack.internal.Nullable;
+
 public abstract class NetworkParameters {
+	
+    public static final String ID_MAINNET = "org.ricechain.production";
+    public static final String ID_TESTNET = "org.ricechain.test";
+    
 	//种子管理器
 	protected SeedManager seedManager;
 	
+	protected String id;
 	//端口
 	protected int port;
 	protected long packetMagic;
+	
+    protected int p2shHeader;
+    protected int addressHeader;
+	
+    protected int dumpedPrivateKeyHeader;
+    
+    //允许的地址前缀
+    protected int[] acceptableAddressCodes;
 	
 	protected transient MessageSerializer defaultSerializer = null;
 	
@@ -55,6 +70,17 @@ public abstract class NetworkParameters {
         }
     }
 
+	@Nullable
+    public static NetworkParameters fromID(String id) {
+        if (id.equals(ID_MAINNET)) {
+            return MainNetParams.get();
+        } else if (id.equals(ID_TESTNET)) {
+            return TestNetworkParameters.get();
+        } else {
+            return null;
+        }
+    }
+	
 	public int getPort() {
 		return port;
 	}
@@ -69,5 +95,31 @@ public abstract class NetworkParameters {
 
 	public int getBestBlockHeight() {
 		return 1000;
+	}
+	
+	/** First byte of a base58 encoded dumped private key. See {@link org.bitcoinj.core.DumpedPrivateKey}. */
+    public int getDumpedPrivateKeyHeader() {
+        return dumpedPrivateKeyHeader;
+    }
+    
+    public String getId() {
+		return id;
+	}
+    
+    /**
+     * The version codes that prefix addresses which are acceptable on this network. Although Satoshi intended these to
+     * be used for "versioning", in fact they are today used to discriminate what kind of data is contained in the
+     * address and to prevent accidentally sending coins across chains which would destroy them.
+     */
+    public int[] getAcceptableAddressCodes() {
+        return acceptableAddressCodes;
+    }
+    
+    public int getP2shHeader() {
+		return p2shHeader;
+	}
+    
+    public int getAddressHeader() {
+		return addressHeader;
 	}
 }
