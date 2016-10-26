@@ -78,9 +78,6 @@ import org.truechain.utils.Utils;
 
 import com.sun.istack.internal.Nullable;
 
-// TODO: Move this class to tracking compression state itself.
-// The Bouncy Castle guys are deprecating their own tracking of the compression state.
-
 /**
  * <p>Represents an elliptic curve public and (optionally) private key, usable for digital signatures but not encryption.
  * Creating a new ECKey with the empty constructor will generate a new random keypair. Other static methods can be used
@@ -110,13 +107,8 @@ import com.sun.istack.internal.Nullable;
  * can usually ignore the compressed/uncompressed distinction.</p>
  */
 public class ECKey implements EncryptableItem {
-	
-	public static void main(String[] args) {
-		ECKey eckey = new ECKey();
-		System.out.println(eckey.getPrivKey());
-	}
-	
-    private static final Logger log = LoggerFactory.getLogger(ECKey.class);
+
+	private static final Logger log = LoggerFactory.getLogger(ECKey.class);
 
     /** Sorts oldest keys first, newest last. */
     public static final Comparator<ECKey> AGE_COMPARATOR = new Comparator<ECKey>() {
