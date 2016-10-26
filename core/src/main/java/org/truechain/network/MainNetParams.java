@@ -17,6 +17,7 @@ public class MainNetParams extends NetworkParameters {
     
     public MainNetParams() {
     	this.seedManager = new RemoteSeedManager();
+    	this.acceptableAddressCodes = new int[]{0x01,0x02};
 	}
     
     public MainNetParams(SeedManager seedManager, int port) {
