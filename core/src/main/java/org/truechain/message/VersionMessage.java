@@ -102,9 +102,9 @@ public class VersionMessage extends Message {
 		clientVersion = (int) readUint32();
         localServices = readUint64().longValue();
         time = readUint64().longValue();
-        myAddr = new PeerAddress(params, payload, cursor, 0);
+        myAddr = new PeerAddress(network, payload, cursor, 0);
         cursor += myAddr.getMessageSize();
-        theirAddr = new PeerAddress(params, payload, cursor, 0);
+        theirAddr = new PeerAddress(network, payload, cursor, 0);
         cursor += theirAddr.getMessageSize();
         // uint64 localHostNonce  (random data)
         // We don't care about the localhost nonce. It's used to detect connecting back to yourself in cases where

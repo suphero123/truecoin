@@ -13,7 +13,7 @@ import org.truechain.core.VarInt;
 import org.truechain.core.exception.ProtocolException;
 import org.truechain.network.NetworkParameters;
 import org.truechain.network.NetworkParameters.ProtocolVersion;
-import org.truechain.utils.Base16;
+import org.truechain.utils.Hex;
 import org.truechain.utils.Utils;
 
 public abstract class Message {
@@ -41,29 +41,29 @@ public abstract class Message {
     protected byte[] payload;
     protected int protocolVersion;
 
-    protected NetworkParameters params;
+    protected NetworkParameters network;
 
     protected Message() {
     	
     }
 
-    protected Message(NetworkParameters params) {
-        this.params = params;
-        serializer = params.getDefaultSerializer();
+    protected Message(NetworkParameters network) {
+        this.network = network;
+        serializer = network.getDefaultSerializer();
     }
     
-    protected Message(NetworkParameters params, byte[] payload, int offset) throws ProtocolException {
-        this(params, payload, offset, params.getProtocolVersionNum(ProtocolVersion.CURRENT));
+    protected Message(NetworkParameters network, byte[] payload, int offset) throws ProtocolException {
+        this(network, payload, offset, network.getProtocolVersionNum(ProtocolVersion.CURRENT));
     }
 
-    protected Message(NetworkParameters params, byte[] payload, int offset, int protocolVersion) throws ProtocolException {
-        this(params, payload, offset, protocolVersion, params.getDefaultSerializer(), UNKNOWN_LENGTH);
+    protected Message(NetworkParameters network, byte[] payload, int offset, int protocolVersion) throws ProtocolException {
+        this(network, payload, offset, protocolVersion, network.getDefaultSerializer(), UNKNOWN_LENGTH);
     }
     
-    protected Message(NetworkParameters params, byte[] payload, int offset, int protocolVersion, MessageSerializer serializer, int length) throws ProtocolException {
+    protected Message(NetworkParameters network, byte[] payload, int offset, int protocolVersion, MessageSerializer serializer, int length) throws ProtocolException {
         this.serializer = serializer;
         this.protocolVersion = protocolVersion;
-        this.params = params;
+        this.network = network;
         this.payload = payload;
         this.cursor = this.offset = offset;
         this.length = length;
@@ -92,8 +92,8 @@ public abstract class Message {
             byte[] reserialized = baseSerialize();
             if (!Arrays.equals(reserialized, payloadBytes))
                 throw new RuntimeException("Serialization is wrong: \n" +
-                		Base16.encode(reserialized) + " vs \n" +
-                		Base16.encode(payloadBytes));
+                		Hex.encode(reserialized) + " vs \n" +
+                		Hex.encode(payloadBytes));
         }
     }
     
@@ -265,5 +265,9 @@ public abstract class Message {
 
 	public void setSerializer(MessageSerializer serializer) {
 		this.serializer = serializer;
+	}
+	
+	public NetworkParameters getNetwork() {
+		return network;
 	}
 }

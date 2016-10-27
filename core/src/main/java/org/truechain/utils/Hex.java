@@ -1,11 +1,11 @@
 package org.truechain.utils;
 
 /**
- * Base16编码解码类
+ * 16进制编码解码类
  */
-public class Base16 {
+public class Hex {
 	/**
-	 * 对字节数据进行Base16编码。
+	 * 对字节数据进行16进制编码。
 	 * 
 	 * @param src
 	 *            源字节数组
@@ -26,7 +26,7 @@ public class Base16 {
 	}
 
 	/**
-	 * 对Base16编码的字符串进行解码。
+	 * 对16进制编码的字符串进行解码。
 	 * 
 	 * @param src
 	 *            源字串

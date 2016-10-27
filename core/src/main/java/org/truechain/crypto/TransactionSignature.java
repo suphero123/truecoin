@@ -4,14 +4,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 
-import org.truechain.core.ECKey;
-import org.truechain.core.Transaction;
-import org.truechain.core.Transaction.SigHash;
 import org.truechain.core.exception.VerificationException;
+import org.truechain.transaction.Transaction;
+import org.truechain.transaction.Transaction.SigHash;
 import org.truechain.utils.Utils;
 
 /**
- * A TransactionSignature wraps an {@link org.bitcoinj.core.ECKey.ECDSASignature} and adds methods for handling
+ * A TransactionSignature wraps an {@link org.ECKey.core.ECKey.ECDSASignature} and adds methods for handling
  * the additional SIGHASH mode byte that is used.
  */
 public class TransactionSignature extends ECKey.ECDSASignature {

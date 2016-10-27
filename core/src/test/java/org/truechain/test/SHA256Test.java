@@ -2,7 +2,7 @@ package org.truechain.test;
 
 import java.io.UnsupportedEncodingException;
 
-import org.truechain.core.Sha256Hash;
+import org.truechain.crypto.Sha256Hash;
 import org.truechain.utils.Utils;
 
 public class SHA256Test {

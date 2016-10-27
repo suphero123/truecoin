@@ -13,6 +13,7 @@ import org.truechain.net.NioClientManager;
 import org.truechain.network.NetworkParameters;
 import org.truechain.network.Seed;
 import org.truechain.network.SeedManager;
+import org.truechain.transaction.Transaction;
 import org.truechain.utils.Utils;
 
 /**

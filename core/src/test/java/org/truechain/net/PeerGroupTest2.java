@@ -3,12 +3,12 @@ package org.truechain.net;
 import java.net.InetSocketAddress;
 
 import org.truechain.core.PeerGroup;
-import org.truechain.core.Transaction;
 import org.truechain.network.MainNetParams;
 import org.truechain.network.NetworkParameters;
 import org.truechain.network.NodeSeedManager;
 import org.truechain.network.Seed;
 import org.truechain.network.SeedManager;
+import org.truechain.transaction.Transaction;
 
 public class PeerGroupTest2 {
 
@@ -20,14 +20,14 @@ public class PeerGroupTest2 {
 		SeedManager seedManager = new NodeSeedManager();
 		seedManager.add(new Seed(new InetSocketAddress("127.0.0.1", 6888), true, 25000));
 		
-		NetworkParameters params = new MainNetParams(seedManager, 8888);
+		NetworkParameters network = new MainNetParams(seedManager, 8888);
 		
-		PeerGroup peerGroup = new PeerGroup(params, 10);
+		PeerGroup peerGroup = new PeerGroup(network, 10);
 		
 		peerGroup.startSyn();
 
 		while(true) {
-			peerGroup.broadcastTransaction(new Transaction());
+			peerGroup.broadcastTransaction(new Transaction(network));
 			try {
 				Thread.sleep(100000l);
 			} catch (InterruptedException e) {

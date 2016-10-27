@@ -10,10 +10,10 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.truechain.core.Sha256Hash;
 import org.truechain.core.exception.ProtocolException;
+import org.truechain.crypto.Sha256Hash;
 import org.truechain.network.NetworkParameters;
-import org.truechain.utils.Base16;
+import org.truechain.utils.Hex;
 import org.truechain.utils.Utils;
 
 public class DefaultMessageSerializer extends MessageSerializer {
@@ -54,7 +54,7 @@ public class DefaultMessageSerializer extends MessageSerializer {
         out.write(message);
 
         if (log.isDebugEnabled())
-            log.debug("Sending {} message: {}", command, Base16.encode(header) + Base16.encode(message));
+            log.debug("Sending {} message: {}", command, Hex.encode(header) + Hex.encode(message));
     }
 	
 	@Override
@@ -105,18 +105,18 @@ public class DefaultMessageSerializer extends MessageSerializer {
         if (header.checksum[0] != hash[0] || header.checksum[1] != hash[1] ||
                 header.checksum[2] != hash[2] || header.checksum[3] != hash[3]) {
             throw new ProtocolException("Checksum failed to verify, actual " +
-            		Base16.encode(hash) + " vs " + Base16.encode(header.checksum));
+            		Hex.encode(hash) + " vs " + Hex.encode(header.checksum));
         }
 
         if (log.isDebugEnabled()) {
             log.debug("Received {} byte '{}' message: {}", header.size, header.command,
-                    Base16.encode(payloadBytes));
+                    Hex.encode(payloadBytes));
         }
 
         try {
             return makeMessage(header.command, header.size, payloadBytes, hash, header.checksum);
         } catch (Exception e) {
-            throw new ProtocolException("Error deserializing message " + Base16.encode(payloadBytes) + "\n", e);
+            throw new ProtocolException("Error deserializing message " + Hex.encode(payloadBytes) + "\n", e);
         }
 	}
 

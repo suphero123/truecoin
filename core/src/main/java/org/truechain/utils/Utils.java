@@ -9,8 +9,8 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 import org.spongycastle.crypto.digests.RIPEMD160Digest;
-import org.truechain.core.Sha256Hash;
 import org.truechain.core.VarInt;
+import org.truechain.crypto.Sha256Hash;
 
 public class Utils {
 	

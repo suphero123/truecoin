@@ -23,8 +23,8 @@ import java.io.OutputStream;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
-import org.truechain.core.Transaction;
 import org.truechain.core.exception.ProtocolException;
+import org.truechain.transaction.Transaction;
 import org.truechain.utils.Utils;
 
 public abstract class MessageSerializer {

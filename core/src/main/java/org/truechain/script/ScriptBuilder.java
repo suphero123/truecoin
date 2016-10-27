@@ -16,22 +16,37 @@
 
 package org.truechain.script;
 
+import static org.truechain.script.ScriptOpCodes.OP_0;
+import static org.truechain.script.ScriptOpCodes.OP_CHECKLOCKTIMEVERIFY;
+import static org.truechain.script.ScriptOpCodes.OP_CHECKMULTISIG;
+import static org.truechain.script.ScriptOpCodes.OP_CHECKSIG;
+import static org.truechain.script.ScriptOpCodes.OP_CHECKSIGVERIFY;
+import static org.truechain.script.ScriptOpCodes.OP_DROP;
+import static org.truechain.script.ScriptOpCodes.OP_DUP;
+import static org.truechain.script.ScriptOpCodes.OP_ELSE;
+import static org.truechain.script.ScriptOpCodes.OP_ENDIF;
+import static org.truechain.script.ScriptOpCodes.OP_EQUAL;
+import static org.truechain.script.ScriptOpCodes.OP_EQUALVERIFY;
+import static org.truechain.script.ScriptOpCodes.OP_HASH160;
+import static org.truechain.script.ScriptOpCodes.OP_IF;
+import static org.truechain.script.ScriptOpCodes.OP_PUSHDATA1;
+import static org.truechain.script.ScriptOpCodes.OP_PUSHDATA2;
+import static org.truechain.script.ScriptOpCodes.OP_PUSHDATA4;
+import static org.truechain.script.ScriptOpCodes.OP_RETURN;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
 import org.truechain.address.Address;
-import org.truechain.core.ECKey;
+import org.truechain.crypto.ECKey;
 import org.truechain.crypto.TransactionSignature;
 import org.truechain.utils.Utils;
 
 import com.sun.istack.internal.Nullable;
-
-import static org.truechain.script.ScriptOpCodes.*;
 
 /**
  * <p>Tools for the construction of commonly used script types. You don't normally need this as it's hidden behind
@@ -405,25 +420,6 @@ public class ScriptBuilder {
     public static Script createP2SHOutputScript(Script redeemScript) {
         byte[] hash = Utils.sha256hash160(redeemScript.getProgram());
         return ScriptBuilder.createP2SHOutputScript(hash);
-    }
-
-    /**
-     * Creates a P2SH output script with given public keys and threshold. Given public keys will be placed in
-     * redeem script in the lexicographical sorting order.
-     */
-    public static Script createP2SHOutputScript(int threshold, List<ECKey> pubkeys) {
-        Script redeemScript = createRedeemScript(threshold, pubkeys);
-        return createP2SHOutputScript(redeemScript);
-    }
-
-    /**
-     * Creates redeem script with given public keys and threshold. Given public keys will be placed in
-     * redeem script in the lexicographical sorting order.
-     */
-    public static Script createRedeemScript(int threshold, List<ECKey> pubkeys) {
-        pubkeys = new ArrayList<ECKey>(pubkeys);
-        Collections.sort(pubkeys, ECKey.PUBKEY_COMPARATOR);
-        return ScriptBuilder.createMultiSigOutputScript(threshold, pubkeys);
     }
 
     /**

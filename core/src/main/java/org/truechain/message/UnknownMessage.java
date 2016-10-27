@@ -2,7 +2,7 @@ package org.truechain.message;
 
 import org.truechain.core.exception.ProtocolException;
 import org.truechain.network.NetworkParameters;
-import org.truechain.utils.Base16;
+import org.truechain.utils.Hex;
 
 /**
  * <p>Instances of this class are not safe for use by multiple threads.</p>
@@ -18,6 +18,6 @@ public class UnknownMessage extends EmptyMessage {
 
     @Override
     public String toString() {
-        return "Unknown message [" + name + "]: " + (payload == null ? "" : Base16.encode(payload));
+        return "Unknown message [" + name + "]: " + (payload == null ? "" : Hex.encode(payload));
     }
 }

@@ -22,15 +22,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.digests.RIPEMD160Digest;
 import org.truechain.address.Address;
-import org.truechain.core.ECKey;
-import org.truechain.core.Sha256Hash;
-import org.truechain.core.Transaction;
 import org.truechain.core.UnsafeByteArrayOutputStream;
 import org.truechain.core.exception.ProtocolException;
 import org.truechain.core.exception.ScriptException;
+import org.truechain.crypto.ECKey;
+import org.truechain.crypto.Sha256Hash;
 import org.truechain.crypto.TransactionSignature;
 import org.truechain.network.NetworkParameters;
-import org.truechain.utils.Base16;
+import org.truechain.transaction.Transaction;
+import org.truechain.utils.Hex;
 import org.truechain.utils.Utils;
 
 import com.sun.istack.internal.Nullable;
@@ -356,7 +356,7 @@ public class Script {
         if (isSentToAddress())
             return new Address(params, getPubKeyHash());
         else if (isPayToScriptHash())
-            return Address.fromP2SHScript(params, this);
+            return Address.fromP2PKScript(params, this);
         else if (forcePayToPubKey && isSentToRawPubKey())
             return ECKey.fromPublicOnly(getPubKey()).toAddress(params);
         else
@@ -535,7 +535,7 @@ public class Script {
             }
         }
 
-        throw new IllegalStateException("Could not find matching key for signature on " + hash.toString() + " sig " + Base16.encode(signatureBytes));
+        throw new IllegalStateException("Could not find matching key for signature on " + hash.toString() + " sig " + Hex.encode(signatureBytes));
     }
 
 
@@ -829,7 +829,7 @@ public class Script {
 
     /**
      * Exposes the script interpreter. Normally you should not use this directly, instead use
-     * {@link org.bitcoinj.core.TransactionInput#verify(org.bitcoinj.core.TransactionOutput)} or
+     * {@link org.truechain.transaction.bitcoinj.core.TransactionInput#verify(org.bitcoinj.core.TransactionOutput)} or
      * {@link org.bitcoinj.script.Script#correctlySpends(org.bitcoinj.core.Transaction, long, Script)}. This method
      * is useful if you need more precise control or access to the final state of the stack. This interface is very
      * likely to change in future.
@@ -849,7 +849,7 @@ public class Script {
 
     /**
      * Exposes the script interpreter. Normally you should not use this directly, instead use
-     * {@link org.bitcoinj.core.TransactionInput#verify(org.bitcoinj.core.TransactionOutput)} or
+     * {@link org.truechain.transaction.bitcoinj.core.TransactionInput#verify(org.bitcoinj.core.TransactionOutput)} or
      * {@link org.bitcoinj.script.Script#correctlySpends(org.bitcoinj.core.Transaction, long, Script)}. This method
      * is useful if you need more precise control or access to the final state of the stack. This interface is very
      * likely to change in future.

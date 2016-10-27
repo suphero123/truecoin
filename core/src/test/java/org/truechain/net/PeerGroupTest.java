@@ -1,7 +1,6 @@
 package org.truechain.net;
 
 import org.truechain.core.PeerGroup;
-import org.truechain.core.Transaction;
 import org.truechain.network.MainNetParams;
 import org.truechain.network.NetworkParameters;
 import org.truechain.network.RemoteSeedManager;

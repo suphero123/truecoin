@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import org.truechain.address.AddressFormatException;
+import org.truechain.crypto.Sha256Hash;
 import org.truechain.utils.Base58;
 import org.truechain.utils.Utils;
 

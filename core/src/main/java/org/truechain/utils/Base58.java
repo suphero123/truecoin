@@ -20,7 +20,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 
 import org.truechain.address.AddressFormatException;
-import org.truechain.core.Sha256Hash;
+import org.truechain.crypto.Sha256Hash;
 
 /**
  * Base58 is a way to encode Bitcoin addresses (or arbitrary data) as alphanumeric strings.

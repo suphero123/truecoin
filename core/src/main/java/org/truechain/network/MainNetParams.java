@@ -5,8 +5,6 @@ import org.truechain.message.MessageSerializer;
 
 public class MainNetParams extends NetworkParameters {
 	
-	
-	
 	private static MainNetParams instance;
     public static synchronized MainNetParams get() {
         if (instance == null) {
@@ -17,7 +15,7 @@ public class MainNetParams extends NetworkParameters {
     
     public MainNetParams() {
     	this.seedManager = new RemoteSeedManager();
-    	this.acceptableAddressCodes = new int[]{0x01,0x02};
+    	this.acceptableAddressCodes = new int[]{0x00,0x01,0x02,0x3,0x9};
 	}
     
     public MainNetParams(SeedManager seedManager, int port) {

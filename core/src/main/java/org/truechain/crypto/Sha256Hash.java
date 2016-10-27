@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.truechain.core;
+package org.truechain.crypto;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,7 +26,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-import org.truechain.utils.Base16;
+import org.truechain.utils.Hex;
 import org.truechain.utils.ByteStreams;
 import org.truechain.utils.Ints;
 import org.truechain.utils.Utils;
@@ -58,7 +58,7 @@ public class Sha256Hash implements Serializable, Comparable<Sha256Hash> {
     @Deprecated
     public Sha256Hash(String hexString) {
     	Utils.checkState(hexString.length() == LENGTH * 2);
-        this.bytes = Base16.decode(hexString);
+        this.bytes = Hex.decode(hexString);
     }
 
     /**
@@ -81,7 +81,7 @@ public class Sha256Hash implements Serializable, Comparable<Sha256Hash> {
      *         hex string, or if it does not represent exactly 32 bytes
      */
     public static Sha256Hash wrap(String hexString) {
-        return wrap(Base16.decode(hexString));
+        return wrap(Hex.decode(hexString));
     }
 
     /**
@@ -243,7 +243,7 @@ public class Sha256Hash implements Serializable, Comparable<Sha256Hash> {
 
     @Override
     public String toString() {
-        return Base16.encode(bytes);
+        return Hex.encode(bytes);
     }
 
     /**

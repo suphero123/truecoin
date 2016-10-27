@@ -23,7 +23,7 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Objects;
 
-import org.truechain.utils.Base16;
+import org.truechain.utils.Hex;
 import org.truechain.utils.Utils;
 
 import com.sun.istack.internal.Nullable;
@@ -147,7 +147,7 @@ public class ScriptChunk {
             buf.append(getOpCodeName(opcode));
         } else if (data != null) {
             // Data chunk
-            buf.append(getPushDataName(opcode)).append("[").append(Base16.encode(data)).append("]");
+            buf.append(getPushDataName(opcode)).append("[").append(Hex.encode(data)).append("]");
         } else {
             // Small num
             buf.append(Script.decodeFromOpN(opcode));
