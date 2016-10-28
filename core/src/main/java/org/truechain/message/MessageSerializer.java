@@ -24,6 +24,7 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
 import org.truechain.core.exception.ProtocolException;
+import org.truechain.crypto.Sha256Hash;
 import org.truechain.transaction.Transaction;
 import org.truechain.utils.Utils;
 
@@ -109,8 +110,23 @@ public abstract class MessageSerializer {
         }
     }
     
-    public final Transaction makeTransaction(byte[] payloadBytes) throws ProtocolException, UnsupportedOperationException {
-    	//TODO
-        return null;
-    }
+    /**
+     * 解析交易
+     * @param payloadBytes
+     * @return
+     * @throws ProtocolException
+     * @throws UnsupportedOperationException
+     */
+    public abstract Transaction makeTransaction(byte[] payloadBytes) throws ProtocolException, UnsupportedOperationException;
+    
+    /**
+     * 解析交易
+     * @param payloadBytes
+     * @param hash
+     * @return
+     * @throws ProtocolException
+     * @throws UnsupportedOperationException
+     */
+    public abstract Transaction makeTransaction(byte[] payloadBytes, 
+    		Sha256Hash hash) throws ProtocolException, UnsupportedOperationException;
 }

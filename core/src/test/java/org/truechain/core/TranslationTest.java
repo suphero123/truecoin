@@ -1,47 +1,74 @@
 package org.truechain.core;
 
+import java.math.BigInteger;
+import java.util.EnumSet;
+
 import org.junit.Test;
 import org.truechain.account.AccountManager;
 import org.truechain.address.Address;
 import org.truechain.crypto.ECKey;
-import org.truechain.network.MainNetParams;
+import org.truechain.crypto.Sha256Hash;
+import org.truechain.network.NetworkParameters;
+import org.truechain.network.TestNetworkParameters;
 import org.truechain.script.Script;
 import org.truechain.script.ScriptBuilder;
+import org.truechain.signers.LocalTransactionSigner;
 import org.truechain.transaction.Transaction;
 import org.truechain.transaction.TransactionInput;
 import org.truechain.transaction.TransactionOutput;
+import org.truechain.utils.Hex;
 
 public class TranslationTest {
 
 	@Test
 	public void testTranslation() {
 		
-		MainNetParams network = MainNetParams.get();
+		NetworkParameters network = TestNetworkParameters.get();
 		
-        Address addr = AccountManager.newAddress(network);
+        Address addr = Address.fromP2PKHash(network, Address.VERSION_TEST_PK, Hex.decode("ffdf74c494d27474def57c5cb4b41a5455705956"));
 
 		//上次交易
 		Transaction out = new Transaction(network);
+		out.setHash(Sha256Hash.wrap(Hex.decode("75d58fffca9a69ba47056e435f7a5a2347a11d0093b50b415aa28e973d70640b")));
+		
 		Transaction tx = new Transaction(network);
 		
 		Script script = ScriptBuilder.createOutputScript(addr);
 		
-		TransactionOutput output = new TransactionOutput(tx, Coin.COIN, script.getProgram());
-		
+		TransactionOutput output = new TransactionOutput(out, Coin.COIN, script.getProgram());
+
 		out.addOutput(output);
 		
 		//本次输入
 		TransactionInput input = tx.addInput(output);
 
 		//输出到该地址
-		ECKey key = new ECKey();
+		ECKey key = ECKey.fromPrivate(new BigInteger("16426823946378490801614451355554969482806436503112915489322677953633742147003"));
 		
-		Address to = AccountManager.newAddress(network, key);
+		Address to = AccountManager.newAddress(network, Address.VERSION_TEST_PK, key);
 		//添加输出
-		tx.addOutput(new TransactionOutput(tx, Coin.COIN, to));
+		TransactionOutput newOutput = new TransactionOutput(tx, Coin.COIN, to);
+		tx.addOutput(newOutput);
+		//交易类型
+		tx.setVersion(to.getVersion());
 		
 		//签名交易
+		//创建一个输入的空签名
+		input.setScriptSig(ScriptBuilder.createInputScript(null, key));
+
+		//
+		final LocalTransactionSigner signer = new LocalTransactionSigner();
+		signer.signInputs(tx, key);
 		
+		byte[] txBytes = tx.baseSerialize();
+		System.out.println(txBytes.length);
+		System.out.println(Hex.encode(txBytes));
 		
+		Transaction verfyTx = network.getDefaultSerializer().makeTransaction(txBytes, null);
+		verfyTx.verfify();
+		
+		verfyTx.getInput(0).getScriptSig().correctlySpends(verfyTx, 0, 
+				verfyTx.getInput(0).getFrom().getScript(), EnumSet.of(Script.VerifyFlag.DERSIG, Script.VerifyFlag.P2SH));
+
 	}
 }

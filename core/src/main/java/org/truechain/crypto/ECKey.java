@@ -26,9 +26,6 @@ import org.spongycastle.crypto.signers.HMacDSAKCalculator;
 import org.spongycastle.math.ec.ECPoint;
 import org.spongycastle.math.ec.FixedPointCombMultiplier;
 import org.spongycastle.math.ec.FixedPointUtil;
-import org.truechain.NativeSecp256k1;
-import org.truechain.NativeSecp256k1Util;
-import org.truechain.Secp256k1Context;
 import org.truechain.address.Address;
 import org.truechain.network.NetworkParameters;
 import org.truechain.utils.Hex;
@@ -359,23 +356,31 @@ public class ECKey {
     }
 	
 	protected ECDSASignature doSign(Sha256Hash input, BigInteger privateKeyForSigning) {
-        if (Secp256k1Context.isEnabled()) {
-            try {
-                byte[] signature = NativeSecp256k1.sign(
-                        input.getBytes(),
-                        Utils.bigIntegerToBytes(privateKeyForSigning, 32)
-                );
-                return ECDSASignature.decodeFromDER(signature);
-            } catch (NativeSecp256k1Util.AssertFailException e) {
-                log.error("Caught AssertFailException inside secp256k1", e);
-                throw new RuntimeException(e);
-            }
-        }
+//        if (Secp256k1Context.isEnabled()) {
+//            try {
+//                byte[] signature = NativeSecp256k1.sign(
+//                        input.getBytes(),
+//                        Utils.bigIntegerToBytes(privateKeyForSigning, 32)
+//                );
+//                return ECDSASignature.decodeFromDER(signature);
+//            } catch (NativeSecp256k1Util.AssertFailException e) {
+//                log.error("Caught AssertFailException inside secp256k1", e);
+//                throw new RuntimeException(e);
+//            }
+//        }
         Utils.checkNotNull(privateKeyForSigning);
         ECDSASigner signer = new ECDSASigner(new HMacDSAKCalculator(new SHA256Digest()));
         ECPrivateKeyParameters privKey = new ECPrivateKeyParameters(privateKeyForSigning, CURVE);
         signer.init(true, privKey);
         BigInteger[] components = signer.generateSignature(input.getBytes());
         return new ECDSASignature(components[0], components[1]).toCanonicalised();
+    }
+	
+	/**
+	 * 是否包含私匙
+	 * @return
+	 */
+	public boolean hasPrivKey() {
+        return priv != null;
     }
 }

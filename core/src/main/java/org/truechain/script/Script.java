@@ -1126,7 +1126,10 @@ public class Script {
                 case OP_EQUALVERIFY:
                     if (stack.size() < 2)
                         throw new ScriptException("Attempted OP_EQUALVERIFY on a stack with size < 2");
-                    if (!Arrays.equals(stack.pollLast(), stack.pollLast()))
+                    byte[] b1 = stack.pollLast();
+                    byte[] b2 = stack.pollLast();
+                    
+                    if (!Arrays.equals(b1, b2))
                         throw new ScriptException("OP_EQUALVERIFY: non-equal data");
                     break;
                 case OP_1ADD:
@@ -1318,7 +1321,8 @@ public class Script {
                 case OP_HASH160:
                     if (stack.size() < 1)
                         throw new ScriptException("Attempted OP_HASH160 on an empty stack");
-                    stack.add(Utils.sha256hash160(stack.pollLast()));
+                    byte[] b = stack.pollLast();
+                    stack.add(Utils.sha256hash160(ECKey.fromPublicOnly(b).getPubKey(false)));
                     break;
                 case OP_HASH256:
                     if (stack.size() < 1)
@@ -1447,7 +1451,7 @@ public class Script {
 
             // TODO: Should check hash type is known
             Sha256Hash hash = txContainingThis.hashForSignature(index, connectedScript, (byte) sig.sighashFlags);
-            sigValid = ECKey.verify(hash.getBytes(), sig, pubKey);
+            sigValid = ECKey.verify(hash.getBytes(), sig, ECKey.fromPublicOnly(pubKey).getPubKey(false));
         } catch (Exception e1) {
             // There is (at least) one exception that could be hit here (EOFException, if the sig is too short)
             // Because I can't verify there aren't more, we use a very generic Exception catch

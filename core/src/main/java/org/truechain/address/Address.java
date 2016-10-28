@@ -28,6 +28,9 @@ public class Address {
 	//认证地址
 	public static final int VERSION_VR = 9;
 
+	//测试地址
+	public static final int VERSION_TEST_PK = 102;
+
 	//默认地址版本
 	public static final int VERSION_DEFAULT = VERSION_PK;
 	
@@ -55,23 +58,13 @@ public class Address {
      * @param hash160
      */
     public Address(NetworkParameters network, int version, byte[] hash160) throws WrongNetworkException {
-    	this.version = version;
         Utils.checkNotNull(network);
-        Utils.checkState(hash160.length == 20, "地址的hash160不正确，必须是20位");
+        Utils.checkState(hash160.length == LENGTH, "地址的hash160不正确，必须是20位");
         if (!isAcceptableVersion(network, version))
             throw new WrongNetworkException(version, network.getAcceptableAddressCodes());
+        this.version = version;
         this.network = network;
-        //地址一共25字节
-        byte[] versionAndHash160 = new byte[21];
-        //加上版本号
-        versionAndHash160[0] = (byte) version;
-        //加上20字节的hash160
-        System.arraycopy(hash160, 0, versionAndHash160, 1, hash160.length);
-        //加上4位的效验码
-        byte[] checkSin = getCheckSin(versionAndHash160);
-        bytes = new byte[25];
-        System.arraycopy(versionAndHash160, 0, bytes, 0, versionAndHash160.length);
-        System.arraycopy(checkSin, 0, bytes, versionAndHash160.length, checkSin.length);
+        this.bytes = hash160;
     }
 
 	/**
@@ -85,8 +78,8 @@ public class Address {
     	byte[] versionAndDataBytes = Base58.decodeChecked(address);
         byte versionByte = versionAndDataBytes[0];
         version = versionByte & 0xFF;
-        bytes = new byte[versionAndDataBytes.length - 1];
-        System.arraycopy(versionAndDataBytes, 1, bytes, 0, versionAndDataBytes.length - 1);
+        bytes = new byte[LENGTH];
+        System.arraycopy(versionAndDataBytes, 1, bytes, 0, LENGTH);
         if (network != null) {
             if (!isAcceptableVersion(network, version)) {
                 throw new WrongNetworkException(version, network.getAcceptableAddressCodes());
@@ -161,7 +154,18 @@ public class Address {
      * @return
      */
     public byte[] getHash() {
-        return Utils.checkNotNull(bytes);
+    	//地址一共25字节
+        byte[] versionAndHash160 = new byte[21];
+        //加上版本号
+        versionAndHash160[0] = (byte) version;
+        //加上20字节的hash160
+        System.arraycopy(bytes, 0, versionAndHash160, 1, bytes.length);
+        //加上4位的效验码
+        byte[] checkSin = getCheckSin(versionAndHash160);
+        byte[] base58bytes = new byte[25];
+        System.arraycopy(versionAndHash160, 0, base58bytes, 0, versionAndHash160.length);
+        System.arraycopy(checkSin, 0, base58bytes, versionAndHash160.length, checkSin.length);
+        return base58bytes;
     }
     
     /**
@@ -189,7 +193,7 @@ public class Address {
     }
     
     public String getBase58() {
-    	return Base58.encode(Utils.checkNotNull(bytes));
+    	return Base58.encode(getHash());
     }
 
     /**
@@ -233,8 +237,12 @@ public class Address {
         network = NetworkParameters.fromID(in.readUTF());
     }
     
+    public int getVersion() {
+		return version;
+	}
+    
     @Override
     public String toString() {
-    	return "network="+network.getId()+", version="+version+", address="+Base58.encode(bytes);
+    	return "network="+network.getId()+", version="+version+", address="+getBase58();
     }
 }

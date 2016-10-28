@@ -34,9 +34,9 @@ public class TransactionSignature extends ECKey.ECDSASignature {
     }
 
     /** Constructs a transaction signature based on the ECDSA signature. */
-    public TransactionSignature(ECKey.ECDSASignature signature, Transaction.SigHash mode, boolean anyoneCanPay) {
+    public TransactionSignature(ECKey.ECDSASignature signature, Transaction.SigHash mode) {
         super(signature.r, signature.s);
-        sighashFlags = calcSigHashValue(mode, anyoneCanPay);
+        sighashFlags = calcSigHashValue(mode);
     }
 
     /**
@@ -51,11 +51,9 @@ public class TransactionSignature extends ECKey.ECDSASignature {
     }
 
     /** Calculates the byte used in the protocol to represent the combination of mode and anyoneCanPay. */
-    public static int calcSigHashValue(Transaction.SigHash mode, boolean anyoneCanPay) {
+    public static int calcSigHashValue(Transaction.SigHash mode) {
         Utils.checkState(SigHash.ALL == mode || SigHash.NONE == mode || SigHash.SINGLE == mode); // enforce compatibility since this code was made before the SigHash enum was updated
         int sighashFlags = mode.value;
-        if (anyoneCanPay)
-            sighashFlags |= Transaction.SigHash.ANYONECANPAY.value;
         return sighashFlags;
     }
 
@@ -106,10 +104,6 @@ public class TransactionSignature extends ECKey.ECDSASignature {
         return true;
     }
 
-    public boolean anyoneCanPay() {
-        return (sighashFlags & Transaction.SigHash.ANYONECANPAY.value) != 0;
-    }
-
     public Transaction.SigHash sigHashMode() {
         final int mode = sighashFlags & 0x1f;
         if (mode == Transaction.SigHash.NONE.value)
@@ -125,7 +119,7 @@ public class TransactionSignature extends ECKey.ECDSASignature {
      * of the type used by Bitcoin we have to encode them using DER encoding, which is just a way to pack the two
      * components into a structure, and then we append a byte to the end for the sighash flags.
      */
-    public byte[] encodeToBitcoin() {
+    public byte[] encode() {
         try {
             ByteArrayOutputStream bos = derByteStream();
             bos.write(sighashFlags);
@@ -137,7 +131,7 @@ public class TransactionSignature extends ECKey.ECDSASignature {
 
     @Override
     public ECKey.ECDSASignature toCanonicalised() {
-        return new TransactionSignature(super.toCanonicalised(), sigHashMode(), anyoneCanPay());
+        return new TransactionSignature(super.toCanonicalised(), sigHashMode());
     }
 
     /**

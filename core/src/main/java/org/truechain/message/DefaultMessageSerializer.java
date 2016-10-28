@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.truechain.core.exception.ProtocolException;
 import org.truechain.crypto.Sha256Hash;
 import org.truechain.network.NetworkParameters;
+import org.truechain.transaction.Transaction;
 import org.truechain.utils.Hex;
 import org.truechain.utils.Utils;
 
@@ -162,6 +163,24 @@ public class DefaultMessageSerializer extends MessageSerializer {
 	@Override
 	public boolean isParseRetainMode() {
 		return false;
+	}
+
+	/**
+	 * 创建交易
+	 */
+	@Override
+	public Transaction makeTransaction(byte[] payloadBytes) throws ProtocolException, UnsupportedOperationException {
+        return this.makeTransaction(payloadBytes, null);
+	}
+	/**
+	 * 创建交易
+	 */
+	@Override
+	public Transaction makeTransaction(byte[] payloadBytes, Sha256Hash hash) throws ProtocolException, UnsupportedOperationException {
+        Transaction tx = new Transaction(network, payloadBytes);
+        if (hash != null)
+            tx.setHash(hash);
+        return tx;
 	}
 
 }

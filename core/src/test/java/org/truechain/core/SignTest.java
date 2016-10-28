@@ -3,12 +3,11 @@ package org.truechain.core;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Base64;
 
 import org.truechain.crypto.ECKey;
 import org.truechain.crypto.ECKey.ECDSASignature;
 import org.truechain.crypto.Sha256Hash;
-import org.truechain.network.MainNetParams;
-import org.truechain.network.NetworkParameters;
 import org.truechain.utils.Base58;
 import org.truechain.utils.Hex;
 import org.truechain.utils.Utils;
@@ -70,6 +69,10 @@ public class SignTest {
         byte[] signbs = signature.encodeToDER();
         
         System.out.println(Hex.encode(signbs));
+        
+        System.out.println(new String(Base64.getEncoder().encode(signbs)));
+        
+        key = ECKey.fromPublicOnly(Hex.decode("0250863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352"));
         
         boolean result = key.verify(hash.getBytes(), Hex.decode("304402203879629cd7c6b4233b0ec5edf3229963ec52c63b30bc1a03b2eb8b6a431f94a802201edabbc70ed2251b98920f11dbbc27e8c353fc761fad32eb3a51de49187005ac"));
         System.out.println("result is "+result);

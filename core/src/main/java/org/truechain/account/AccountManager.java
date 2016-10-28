@@ -48,4 +48,12 @@ public final class AccountManager {
 		ECKey key = ECKey.fromPrivate(pri);
 		return Address.fromP2PKHash(network, version, Utils.sha256hash160(key.getPubKey(false)));
 	}
+	
+	public final static Address newAddressFromKey(NetworkParameters network, ECKey key) {
+		return Address.fromP2PKHash(network, Address.VERSION_DEFAULT, Utils.sha256hash160(key.getPubKey(false)));
+	}
+	
+	public final static Address newAddressFromKey(NetworkParameters network, int version, ECKey key) {
+		return Address.fromP2PKHash(network, version, Utils.sha256hash160(key.getPubKey(false)));
+	}
 }
