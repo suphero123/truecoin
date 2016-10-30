@@ -7,8 +7,8 @@ import java.math.BigInteger;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.truechain.account.AccountManager;
-import org.truechain.address.Address;
+import org.truechain.account.AccountTool;
+import org.truechain.account.Address;
 import org.truechain.crypto.ECKey;
 import org.truechain.network.NetworkParameters;
 import org.truechain.network.TestNetworkParameters;
@@ -21,7 +21,7 @@ public class AccountTest {
 
 	@Test
 	public void testAddress() {
-		ECKey key = AccountManager.newPriKey();
+		ECKey key = AccountTool.newPriKey();
 		
 		log.info("pri key is :" + key.getPrivateKeyAsHex());
 		log.info("pub key is :" + key.getPublicKeyAsHex());
@@ -31,7 +31,7 @@ public class AccountTest {
 		
 		int i = 0;
 		while(true) {
-			Address address = AccountManager.newAddress(network, Address.VERSION_TEST_PK);
+			Address address = AccountTool.newAddress(network, Address.VERSION_TEST_PK);
 			log.info("new address is :" + address);
 			if(!address.getBase58().startsWith("i")) {
 				System.err.println("==============");
@@ -48,7 +48,7 @@ public class AccountTest {
 		
 		assertEquals(address.getBase58(), "i5xL7pYbLsHYwcbmBGHNDxG6vUjqpHQJcf");
 		
-		address = AccountManager.newAddressFromPrikey(network, Address.VERSION_TEST_PK, new BigInteger(Hex.decode("18E14A7B6A307F426A94F8114701E7C8E774E7F9A47E2C2035DB29A206321725")));
+		address = AccountTool.newAddressFromPrikey(network, Address.VERSION_TEST_PK, new BigInteger(Hex.decode("18E14A7B6A307F426A94F8114701E7C8E774E7F9A47E2C2035DB29A206321725")));
 		assertEquals(address.getBase58(), "i3a1NQjXr88yTctEKyTRnbRXxdgLNEvLLw");
 		
 		address = Address.fromBase58(network, "179sduXmc57hbYsP5Ar476pJKkdx9CyiXD");

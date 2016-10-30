@@ -3,8 +3,8 @@ package org.truechain.transaction;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.truechain.account.Address;
 import org.truechain.account.RedeemData;
-import org.truechain.address.Address;
 import org.truechain.core.Coin;
 import org.truechain.core.VarInt;
 import org.truechain.core.exception.ScriptException;

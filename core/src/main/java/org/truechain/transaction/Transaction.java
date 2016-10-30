@@ -8,8 +8,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.truechain.account.AccountManager;
-import org.truechain.address.Address;
+import org.truechain.account.AccountTool;
+import org.truechain.account.Address;
 import org.truechain.core.Coin;
 import org.truechain.core.UnsafeByteArrayOutputStream;
 import org.truechain.core.VarInt;
@@ -137,7 +137,7 @@ public class Transaction extends Message {
             //TODO 根据交易类型，生成对应的赎回脚本
             
     		Script script = ScriptBuilder.createOutputScript(
-    				AccountManager.newAddressFromKey(network, (int)version, key));
+    				AccountTool.newAddressFromKey(network, (int)version, key));
     		
             pre.setScript(script);
             

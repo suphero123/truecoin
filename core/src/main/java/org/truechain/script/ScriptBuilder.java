@@ -41,7 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
-import org.truechain.address.Address;
+import org.truechain.account.Address;
 import org.truechain.crypto.ECKey;
 import org.truechain.crypto.TransactionSignature;
 import org.truechain.utils.Utils;

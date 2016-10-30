@@ -19,7 +19,7 @@ package org.truechain.utils;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-import org.truechain.address.AddressFormatException;
+import org.truechain.account.AddressFormatException;
 import org.truechain.crypto.Sha256Hash;
 
 /**

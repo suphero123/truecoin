@@ -34,8 +34,6 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.istack.internal.Nullable;
 
-import net.jcip.annotations.GuardedBy;
-
 /**
  * A simple NIO MessageWriteTarget which handles all the business logic of a connection (reading+writing bytes).
  * Used only by the NioClient and NioServer classes
@@ -51,14 +49,14 @@ class ConnectionHandler implements MessageWriteTarget {
     // We lock when touching local flags and when writing data, but NEVER when calling any methods which leave this
     // class into non-Java classes.
     private final ReentrantLock lock = new ReentrantLock();
-    @GuardedBy("lock") private final ByteBuffer readBuff;
-    @GuardedBy("lock") private final SocketChannel channel;
-    @GuardedBy("lock") private final SelectionKey key;
-    @GuardedBy("lock") StreamConnection connection;
-    @GuardedBy("lock") private boolean closeCalled = false;
+    private final ByteBuffer readBuff;
+    private final SocketChannel channel;
+    private final SelectionKey key;
+    StreamConnection connection;
+    private boolean closeCalled = false;
 
-    @GuardedBy("lock") private long bytesToWriteRemaining = 0;
-    @GuardedBy("lock") private final LinkedList<ByteBuffer> bytesToWrite = new LinkedList<ByteBuffer>();
+    private long bytesToWriteRemaining = 0;
+    private final LinkedList<ByteBuffer> bytesToWrite = new LinkedList<ByteBuffer>();
 
     private Set<ConnectionHandler> connectedHandlers;
 
@@ -121,7 +119,6 @@ class ConnectionHandler implements MessageWriteTarget {
         }
     }
 
-    @GuardedBy("lock")
     private void setWriteOps() {
         // Make sure we are registered to get updated when writing is available again
         key.interestOps(key.interestOps() | SelectionKey.OP_WRITE);

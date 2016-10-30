@@ -26,7 +26,7 @@ import org.spongycastle.crypto.signers.HMacDSAKCalculator;
 import org.spongycastle.math.ec.ECPoint;
 import org.spongycastle.math.ec.FixedPointCombMultiplier;
 import org.spongycastle.math.ec.FixedPointUtil;
-import org.truechain.address.Address;
+import org.truechain.account.Address;
 import org.truechain.network.NetworkParameters;
 import org.truechain.utils.Hex;
 import org.truechain.utils.Utils;

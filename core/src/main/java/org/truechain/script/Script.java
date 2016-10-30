@@ -21,7 +21,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.digests.RIPEMD160Digest;
-import org.truechain.address.Address;
+import org.truechain.account.Address;
 import org.truechain.core.UnsafeByteArrayOutputStream;
 import org.truechain.core.exception.ProtocolException;
 import org.truechain.core.exception.ScriptException;

@@ -1,19 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~ Copyright 2012 Google Inc.
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~    http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -144,14 +129,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <detectLinks/>
-                    <links>
-                        <link>http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/</link>
-                    </links>
-                    <detectJavaApiLink/>
-                    <quiet>true</quiet>
-                </configuration>
             </plugin>
 
             <!-- Verify the dependency chain: see https://github.com/gary-rowe/BitcoinjEnforcerRules for
@@ -184,7 +161,6 @@
                                         <urn>com.fasterxml.jackson.core:jackson-core:2.5.1:jar:null:test:e2a00ad1d7e540ec395e9296a34da484c8888d4d</urn>
                                         <urn>com.fasterxml.jackson.core:jackson-databind:2.5.2:jar:null:test:2b4dd13fbe6f8c6b146d4c3b7fd70862f136802d</urn>
                                         <urn>com.google.code.findbugs:jsr305:2.0.1:jar:null:compile:516c03b21d50a644d538de0f0369c620989cd8f0</urn>
-                                        <urn>com.google.guava:guava:18.0:jar:null:compile:cce0823396aa693798f8882e64213b1772032b09</urn>
                                         <urn>com.google.protobuf:protobuf-java:2.6.1:jar:null:compile:d9521f2aecb909835746b7a5facf612af5e890e8</urn>
                                         <urn>com.h2database:h2:1.3.167:jar:null:compile:d3867d586f087e53eb12fc65e5693d8ee9a5da17</urn>
                                         <urn>com.lambdaworks:scrypt:1.4.0:jar:null:compile:906506b74f30c8c20bccd9ed4a11112d8941fe87</urn>
@@ -266,68 +242,6 @@
                 </executions>
             </plugin>
 
-            <!-- Code coverage plugin, generates coverage report to target/site/jacoco/
-                To skip coverage generation add -Djacoco.skip=true
-             -->
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.5.201505241946</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/Protos*.class</exclude> <!-- Exclude generated protobuf classes -->
-                        <exclude>org/bitcoinj/jni/*</exclude> <!-- Exclude JNI classes -->
-                        <exclude>org/bitcoin/*</exclude> <!-- Exclude native classes -->
-                    </excludes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>pre-unit-test</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                        <configuration>
-                            <destFile>${project.build.directory}/coverage-reports/jacoco.exec</destFile>
-                            <propertyName>surefireArgLine</propertyName>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>post-unit-test</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <configuration>
-                            <dataFile>${project.build.directory}/coverage-reports/jacoco.exec</dataFile>
-                            <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>default-report</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Unit tests plugin, to skip runing test add -Dmaven.test.skip -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <argLine>-Xmx1024m ${surefireArgLine}</argLine><!-- Last argument is required for code coverage to work. -->
-                    <runOrder>alphabetical</runOrder>
-                    <systemProperties>
-                        <property>
-                            <name>java.util.logging.config.file</name>
-                            <value>src/test/resources/logging.properties</value>
-                        </property>
-                    </systemProperties>
-                </configuration>
-            </plugin>
-
             <!-- Coveralls is a online code coverage tool, you can track code coverage here: https://coveralls.io/r/bitcoinj/bitcoinj -->
             <plugin>
                 <groupId>org.eluder.coveralls</groupId>
@@ -345,11 +259,25 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
-            <version>1.7.20</version>
-            <scope>test</scope>
-        </dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-api</artifactId>
+		    <version>1.7.21</version>
+		</dependency>
+		<dependency>
+	    	<groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-log4j12</artifactId>
+		    <version>1.7.21</version>
+		</dependency>
+		<dependency>
+		    <groupId>log4j</groupId>
+		    <artifactId>log4j</artifactId>
+		    <version>1.2.17</version>
+		</dependency>
+		<dependency>
+		    <groupId>commons-logging</groupId>
+		    <artifactId>commons-logging</artifactId>
+		    <version>1.2</version>
+		</dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -357,31 +285,16 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.3.167</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>com.madgag.spongycastle</groupId>
             <artifactId>core</artifactId>
             <version>1.51.0.0</version>
         </dependency>
-        <dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java</artifactId>
-            <version>2.6.1</version>
-        </dependency>
-        <dependency>
-            <groupId>net.jcip</groupId>
-            <artifactId>jcip-annotations</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.lambdaworks</groupId>
-            <artifactId>scrypt</artifactId>
-            <version>1.4.0</version>
-        </dependency>
+		<dependency>
+		    <groupId>org.iq80.leveldb</groupId>
+		    <artifactId>leveldb</artifactId>
+		    <version>0.9</version>
+		</dependency>
+
     </dependencies>
 
 </project>

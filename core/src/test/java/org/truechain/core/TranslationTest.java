@@ -4,8 +4,8 @@ import java.math.BigInteger;
 import java.util.EnumSet;
 
 import org.junit.Test;
-import org.truechain.account.AccountManager;
-import org.truechain.address.Address;
+import org.truechain.account.AccountTool;
+import org.truechain.account.Address;
 import org.truechain.crypto.ECKey;
 import org.truechain.crypto.Sha256Hash;
 import org.truechain.network.NetworkParameters;
@@ -45,7 +45,7 @@ public class TranslationTest {
 		//输出到该地址
 		ECKey key = ECKey.fromPrivate(new BigInteger("16426823946378490801614451355554969482806436503112915489322677953633742147003"));
 		
-		Address to = AccountManager.newAddress(network, Address.VERSION_TEST_PK, key);
+		Address to = AccountTool.newAddress(network, Address.VERSION_TEST_PK, key);
 		//添加输出
 		TransactionOutput newOutput = new TransactionOutput(tx, Coin.COIN, to);
 		tx.addOutput(newOutput);
@@ -61,7 +61,6 @@ public class TranslationTest {
 		signer.signInputs(tx, key);
 		
 		byte[] txBytes = tx.baseSerialize();
-		System.out.println(txBytes.length);
 		System.out.println(Hex.encode(txBytes));
 		
 		Transaction verfyTx = network.getDefaultSerializer().makeTransaction(txBytes, null);
