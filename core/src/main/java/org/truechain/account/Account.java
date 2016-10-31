@@ -29,18 +29,12 @@ public class Account {
 	//账户类型
 	private AccountType accountType;
 	//帐户地址
-	private List<Address> addressList;
+	private Address address;
 	//帐户主体
 	private byte[] body;
 	
 	public Account() {
-		this.addressList = new ArrayList<Address>();
 		accountType = AccountType.SYSTEM;
-	}
-	
-	public Account add(Address address) {
-		addressList.add(address);
-		return this;
 	}
 	
 	public AccountType getAccountType() {
@@ -49,12 +43,14 @@ public class Account {
 	public void setAccountType(AccountType accountType) {
 		this.accountType = accountType;
 	}
-	public List<Address> getAddressList() {
-		return addressList;
+	public Address getAddress() {
+		return address;
 	}
-	public void setAddressList(List<Address> addressList) {
-		this.addressList = addressList;
+
+	public void setAddress(Address address) {
+		this.address = address;
 	}
+
 	public byte[] getBody() {
 		return body;
 	}

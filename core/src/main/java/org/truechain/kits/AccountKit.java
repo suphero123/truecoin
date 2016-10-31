@@ -20,7 +20,6 @@ import org.truechain.core.exception.MoneyNotEnoughException;
 import org.truechain.crypto.ECKey;
 import org.truechain.network.NetworkParameters;
 import org.truechain.store.StoreProvider;
-import org.truechain.store.TransactionStore;
 import org.truechain.store.TransactionStoreProvider;
 import org.truechain.utils.Utils;
 
@@ -35,7 +34,7 @@ public class AccountKit {
 
 	private NetworkParameters network;
 	//账户文件路径
-	private String accountFile;
+	private String accountDir;
 	private List<Account> accountList = new ArrayList<Account>();
 	//状态连存储服务
 	private StoreProvider chainstateStoreProvider;
@@ -48,14 +47,14 @@ public class AccountKit {
 		this.network = Utils.checkNotNull(network);
 		Utils.checkNotNull(dataDir);
 		
-		//帐户数据保存于数据目录下，命名为account.data
-		this.accountFile = dataDir + "account.dat";
+		//帐户信息保存于数据目录下的account目录，以account开始的dat文件，一个文件一个帐户，支持多帐户
+		this.accountDir = dataDir + "account";
 		
 		//初始化交易存储服务，保存与帐户有关的所有交易，保存于数据目录下的transaction文件夹
 		this.transactionStoreProvider = TransactionStoreProvider.getInstace(dataDir+File.pathSeparator+"transaction", network);
 		//初始化状态链存储服务，该目录保存的所有未花费的交易，保存于数据目录下的chainstate文件夹
 		this.chainstateStoreProvider = TransactionStoreProvider.getInstace(dataDir+File.pathSeparator+"chainstate", network);
-				
+		
 		init();
 	}
 	
@@ -155,83 +154,121 @@ public class AccountKit {
 		if(money.add(fee).compareTo(balance) > 0) {
 			throw new MoneyNotEnoughException();
 		}
-		
 		return null;
+	}
+	
+	/**
+	 * 初始化一个普通帐户
+	 * @param mgPw	帐户管理密码
+	 * @param trPw  帐户交易密码
+	 * @param recommendCode 推荐码
+	 * @return
+	 * @throws IOException
+	 */
+	public Address createNewAccount(String mgPw, String trPw, String recommendCode) throws IOException {
+		
+		Utils.checkNotNull(mgPw);
+		Utils.checkNotNull(trPw);
+		Utils.checkNotNull(recommendCode);
+		
+		//生成新的帐户信息
+		//生成私匙公匙对
+		ECKey key = new ECKey();
+		//取生成的未压缩的公匙做为该帐户的永久私匙种子
+		byte[] prikeySeed = key.getPubKey(false);
+		//随机
+
+		//默认生成一个系统帐户
+		AccountType accountType = AccountType.SYSTEM;
+		
+		//以base58的帐户地址来命名帐户文件
+		Address address = AccountTool.newAddress(network, accountType.value(), key);
+		
+		File accountFile = new File(accountDir, address.getBase58()+".dat");
+		
+		FileOutputStream fos = new FileOutputStream(accountFile);
+		try {
+			//数据存放格式，type+20字节的hash160+私匙长度+私匙+公匙长度+公匙，钱包加密后，私匙是
+			fos.write(accountType.value());
+			byte[] privKey = key.getPrivKeyBytes();
+			fos.write(privKey.length);
+			fos.write(key.getPrivKeyBytes());
+			fos.write(key.getPubKey());
+		} finally {
+			fos.close();
+		}
+		loadAccount();
+		
+		return address;
+	}
+	
+	//加载现有的帐户
+	public void loadAccount() throws IOException {
+		this.accountList.clear();
+		
+		File accountDirFile = new File(accountDir);
+
+		if(!accountDirFile.exists() || !accountDirFile.isDirectory()) {
+			throw new IOException("account base dir not exists");
+		}
+		
+		//加载帐户目录下的所有帐户
+		for (File accountFile : accountDirFile.listFiles()) {
+			//读取私匙
+			FileInputStream fis = new FileInputStream(accountFile);
+			byte type = 0;
+			byte[] privKey = new byte[32];
+			try {
+				byte[] typeAndPrivKey = new byte[33];
+				fis.read(typeAndPrivKey);
+				type = typeAndPrivKey[0];	//账户类型
+				System.arraycopy(typeAndPrivKey, 1, privKey, 0, 32);
+			} finally {
+				fis.close();
+			}
+			
+			ECKey key = ECKey.fromPrivate(new BigInteger(privKey));
+			
+			//目前先实现系统账户
+			if(type == AccountType.SYSTEM.value()) {
+				Address address = AccountTool.newAddress(network, AccountType.SYSTEM.value(), key);
+				accountList.add(new Account().add(address));
+				if(log.isDebugEnabled()) {
+					log.debug("load account : {}", address.getBase58());
+				}
+			}
+		}
+		//加载各地址的余额
+		loadBalanceFromChainstateAndUnconfirmedTransaction();
 	}
 	
 	/*
 	 * 初始化账户信息
 	 */
 	private synchronized void init() throws IOException {
+		maybeCreateAccountDir();
+		loadAccount();
+	}
+
+	//如果钱包目录不存在则创建
+	private void maybeCreateAccountDir() throws IOException {
 		//检查账户目录是否存在
-		File account = new File(accountFile);
-		if(!account.exists() || account.isDirectory()) {
-			createNewAccount(account);
-		} 
-		loadAccount(account);
-	}
-
-	//创建新的钱包
-	private void createNewAccount(File accountFile) throws IOException {
-		//创建账户新文件
-		accountFile.createNewFile();
-		//生成私匙公匙对
-		ECKey key = new ECKey();
-		
-		//默认生成一个系统帐户
-		AccountType accountType = AccountType.SYSTEM;
-		
-		FileOutputStream fos = new FileOutputStream(accountFile);
-		try {
-			fos.write(accountType.value());
-			fos.write(key.getPrivKeyBytes());
-			fos.write(key.getPubKey());
-		} finally {
-			fos.close();
+		File accountDirFile = new File(accountDir);
+		if(!accountDirFile.exists() || !accountDirFile.isDirectory()) {
+			accountDirFile.mkdir();
 		}
 	}
-
-	//加载现有的钱包
-	private void loadAccount(File accountFile) throws IOException {
-		//读取私匙
-		FileInputStream fis = new FileInputStream(accountFile);
-		byte type = 0;
-		byte[] privKey = new byte[32];
-		try {
-			byte[] typeAndPrivKey = new byte[33];
-			fis.read(typeAndPrivKey);
-			type = typeAndPrivKey[0];	//账户类型
-			System.arraycopy(typeAndPrivKey, 1, privKey, 0, 32);
-		} finally {
-			fis.close();
-		}
-		
-		ECKey key = ECKey.fromPrivate(new BigInteger(privKey));
-		
-		//目前先实现系统账户
-		if(type == AccountType.SYSTEM.value()) {
-			Address address = AccountTool.newAddress(network, AccountType.SYSTEM.value(), key);
-			accountList.add(new Account().add(address));
-			if(log.isDebugEnabled()) {
-				log.debug("load account : {}", address.getBase58());
-			}
-		}
-		//加载各地址的余额
-		loadBalanceFromChainstateAndUnconfirmedTransaction();
-	}
-
 	/*
 	 * 从状态链（未花费的地址集合）和未确认的交易加载余额
 	 */
 	private void loadBalanceFromChainstateAndUnconfirmedTransaction() {
 		for (Account account : accountList) {
-			for (Address address : account.getAddressList()) {
-				byte[] hash160 = address.getHash160();
-				//查询是否
-				Coin[] balances = transactionStoreProvider.getBalanceAndUnconfirmedBalance(hash160);
-				address.setBalance(balances[0]);
-				address.setUnconfirmedBalance(balances[1]);
-			}
+			Address address = account.getAddress();
+			byte[] hash160 = address.getHash160();
+			//查询是否
+			Coin[] balances = transactionStoreProvider.getBalanceAndUnconfirmedBalance(hash160);
+			address.setBalance(balances[0]);
+			address.setUnconfirmedBalance(balances[1]);
 		}
 	}
 }

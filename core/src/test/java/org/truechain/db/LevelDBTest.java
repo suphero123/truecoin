@@ -14,7 +14,7 @@ public class LevelDBTest {
 		
 		long max = 100000;
 		for (long i = 0; i < max; i++) {
-			String value = "this is value of "+i;
+			String value = "测试，this is value of "+i;
 			byte[] key = ("key_"+i).getBytes();
 			storage.put(key, value.getBytes());
 		}
@@ -25,7 +25,7 @@ public class LevelDBTest {
 			long index = (long) (Math.random()*max);
 			byte[] key = ("key_"+index).getBytes();
 			String value = new String(storage.get(key));
-//			System.out.println(value);
+			System.out.println(value);
 		}
 		System.out.println("读取 "+count+" 条数据耗时："+(System.currentTimeMillis() - time)+" ms");
 		storage.close();
