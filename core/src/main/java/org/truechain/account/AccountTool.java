@@ -86,8 +86,8 @@ public final class AccountTool {
 		byte[] pwPriBytes = new byte[privSeedSha256.length + pwSha256.length];
 		for (int i = 0; i < pwPriBytes.length; i+=2) {
 			int index = i / 2;
-			pwPriBytes[index+1] = pwSha256[index];
-			pwPriBytes[index] = privSeedSha256[index];
+			pwPriBytes[index] = pwSha256[index];
+			pwPriBytes[index+1] = privSeedSha256[index];
 		}
 		//生成账户管理的私匙
 		return new BigInteger(Sha256Hash.hash(pwPriBytes));

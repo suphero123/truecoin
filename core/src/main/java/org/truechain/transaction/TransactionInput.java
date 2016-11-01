@@ -12,7 +12,7 @@ import org.truechain.utils.Utils;
  * @author ln
  *
  */
-public class TransactionInput {
+public class TransactionInput implements Input {
 
 	public static final long NO_SEQUENCE = 0xFFFFFFFFL;
 	

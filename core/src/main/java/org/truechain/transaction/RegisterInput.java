@@ -5,12 +5,8 @@ import java.io.OutputStream;
 
 import org.truechain.account.Account;
 import org.truechain.core.VarInt;
-import org.truechain.crypto.ECKey;
-import org.truechain.crypto.Sha256Hash;
-import org.truechain.crypto.TransactionSignature;
 import org.truechain.script.Script;
 import org.truechain.script.ScriptBuilder;
-import org.truechain.transaction.Transaction.SigHash;
 import org.truechain.utils.Utils;
 
 public class RegisterInput extends TransactionInput {
@@ -37,9 +33,9 @@ public class RegisterInput extends TransactionInput {
 			stream.write(body);
 		}
         //签名
-		Script script = ScriptBuilder.createEmptyInputScript(Transaction.VERSION_REGISTER, account.getAddress().getHash160());
-		byte[] sign = script.getProgram();
+		byte[] sign = getScriptBytes();
 		stream.write(new VarInt(sign.length).encode());
 		stream.write(sign);
 	}
+	
 }

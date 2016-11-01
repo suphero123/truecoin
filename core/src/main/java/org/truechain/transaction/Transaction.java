@@ -43,9 +43,9 @@ public class Transaction extends Message {
     public static final int MAX_STANDARD_TX_SIZE = 100000;
     
 	//交易输入
-	private List<TransactionInput> inputs;
+    protected List<Input> inputs;
 	//交易输出
-	private List<TransactionOutput> outputs;
+    protected List<TransactionOutput> outputs;
 	
 	//tx hash
 	protected Sha256Hash hash;
@@ -82,7 +82,7 @@ public class Transaction extends Message {
 	
 	public Transaction(NetworkParameters network) {
 		super(network);
-		inputs = new ArrayList<TransactionInput>();
+		inputs = new ArrayList<Input>();
         outputs = new ArrayList<TransactionOutput>();
 	}
 	
@@ -96,7 +96,7 @@ public class Transaction extends Message {
 	protected void serializeToStream(OutputStream stream) throws IOException {
 		Utils.uint32ToByteStreamLE(version, stream);
         stream.write(new VarInt(inputs.size()).encode());
-        for (TransactionInput in : inputs)
+        for (Input in : inputs)
             in.serialize(stream);
         stream.write(new VarInt(outputs.size()).encode());
         for (TransactionOutput out : outputs)
@@ -115,9 +115,10 @@ public class Transaction extends Message {
 
 		//交易输入数量
         long numInputs = readVarInt();
-        inputs = new ArrayList<TransactionInput>((int) numInputs);
+        inputs = new ArrayList<Input>((int) numInputs);
         for (int i = 0; i < numInputs; i++) {
-            inputs.add(parseInput());
+        	Input input = parseInput();
+            inputs.add(input);
         }
 
 		//交易输出数量
@@ -148,9 +149,10 @@ public class Transaction extends Message {
 	
 	/**
 	 * 反序列化交易的输入部分
+	 * @return 
 	 * @return
 	 */
-	protected TransactionInput parseInput() {
+	protected <T extends Input> Input parseInput() {
 		TransactionInput input = new TransactionInput();
         input.setParent(this);
         
@@ -203,7 +205,7 @@ public class Transaction extends Message {
             //清除上次交易脚本里的操作码
             redeemScript = Script.removeAllInstancesOfOp(redeemScript, ScriptOpCodes.OP_CODESEPARATOR);
 
-            TransactionInput input = tx.inputs.get(index);
+            Input input = tx.inputs.get(index);
             input.setScriptBytes(redeemScript);
 
             if ((sigHashType & 0x1f) == SigHash.NONE.value) {
@@ -304,7 +306,7 @@ public class Transaction extends Message {
         return addOutput(new TransactionOutput(this, value, script.getProgram()));
     }
     
-    public TransactionInput getInput(int index) {
+    public Input getInput(int index) {
         return inputs.get(index);
     }
 
@@ -312,7 +314,7 @@ public class Transaction extends Message {
         return outputs.get(index);
     }
     
-    public List<TransactionInput> getInputs() {
+    public List<Input> getInputs() {
 		return inputs;
 	}
     

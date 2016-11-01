@@ -29,7 +29,7 @@ public class LocalTransactionSigner implements TransactionSigner {
     public boolean signInputs(Transaction tx, ECKey key) {
         int numInputs = tx.getInputs().size();
         for (int i = 0; i < numInputs; i++) {
-            TransactionInput txIn = tx.getInput(i);
+            TransactionInput txIn = (TransactionInput) tx.getInput(i);
             if (txIn.getFrom() == null) {
                 log.warn("缺少上次交易的引用,index:{}", i);
                 continue;

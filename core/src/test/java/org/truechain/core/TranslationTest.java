@@ -67,7 +67,7 @@ public class TranslationTest {
 		verfyTx.verfify();
 		
 		verfyTx.getInput(0).getScriptSig().correctlySpends(verfyTx, 0, 
-				verfyTx.getInput(0).getFrom().getScript(), EnumSet.of(Script.VerifyFlag.DERSIG, Script.VerifyFlag.P2SH));
+				((TransactionInput)verfyTx.getInput(0)).getFrom().getScript(), EnumSet.of(Script.VerifyFlag.DERSIG, Script.VerifyFlag.P2SH));
 
 	}
 }

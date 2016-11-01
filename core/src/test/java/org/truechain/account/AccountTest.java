@@ -29,19 +29,19 @@ public class AccountTest {
 		
 		NetworkParameters network = TestNetworkParameters.get();
 		
-		int i = 0;
-		while(true) {
-			Address address = AccountTool.newAddress(network, Address.VERSION_TEST_PK);
-			log.info("new address is :" + address);
-			if(!address.getBase58().startsWith("i")) {
-				System.err.println("==============");
-				return;
-			}
-			i++;
-			if(i == 100) {
-				break;
-			}
-		}
+//		int i = 0;
+//		while(true) {
+//			Address address = AccountTool.newAddress(network, Address.VERSION_TEST_PK);
+//			log.info("new address is :" + address);
+//			if(!address.getBase58().startsWith("i")) {
+//				System.err.println("==============");
+//				return;
+//			}
+//			i++;
+//			if(i == 100) {
+//				break;
+//			}
+//		}
 		Address address = Address.fromP2PKHash(network, Address.VERSION_TEST_PK, 
 				Utils.sha256hash160(ECKey.fromPrivate(new BigInteger("61914497277584841097702477783063064420681667313180238384957944936487927892583"))
 						.getPubKey(false)));

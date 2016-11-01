@@ -257,12 +257,21 @@ public class AccountKit {
 		//TODO
 		RegisterTransaction tx = new RegisterTransaction(network, account);
 		//根据密码计算出私匙
-		tx.calculateSignature(ECKey.fromPrivate(AccountTool.genPrivKey1(account.getPriSeed(), pwd.getBytes())), 
-				ECKey.fromPrivate(AccountTool.genPrivKey2(account.getPriSeed(), pwd.getBytes())));
+		ECKey seedPri = ECKey.fromPublicOnly(account.getPriSeed());
+		byte[] seedPribs = seedPri.getPubKey(false);
 		
-		tx.verfify();
+		tx.calculateSignature(ECKey.fromPrivate(AccountTool.genPrivKey1(seedPribs, pwd.getBytes())), 
+				ECKey.fromPrivate(AccountTool.genPrivKey2(seedPribs, pwd.getBytes())));
+		//序列化和反序列化
+		byte[] txContent = tx.baseSerialize();
 		
-		peerKit.broadcastTransaction(tx);
+		tx.verfifyScript();
+		
+		
+		RegisterTransaction tx1 = new RegisterTransaction(network, txContent);
+		tx1.verfifyScript();
+		
+//		peerKit.broadcastTransaction(tx);
 	}
 
 	//加载现有的帐户

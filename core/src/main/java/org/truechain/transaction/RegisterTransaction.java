@@ -1,21 +1,21 @@
 package org.truechain.transaction;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.truechain.account.Account;
-import org.truechain.core.UnsafeByteArrayOutputStream;
+import org.truechain.account.AccountTool;
+import org.truechain.account.Account.AccountType;
+import org.truechain.core.VarInt;
 import org.truechain.core.exception.ProtocolException;
+import org.truechain.core.exception.VerificationException;
 import org.truechain.crypto.ECKey;
 import org.truechain.crypto.ECKey.ECDSASignature;
 import org.truechain.crypto.Sha256Hash;
 import org.truechain.network.NetworkParameters;
 import org.truechain.script.Script;
 import org.truechain.script.ScriptBuilder;
-import org.truechain.script.ScriptOpCodes;
-import org.truechain.transaction.Transaction.SigHash;
 import org.truechain.utils.Utils;
 
 /**
@@ -24,12 +24,9 @@ import org.truechain.utils.Utils;
  *
  */
 public class RegisterTransaction extends Transaction {
-
-	//交易输入
-	private List<RegisterInput> inputs;
-	//交易输出
-	private List<RegisterOutput> outputs;
 	
+	private final static Logger log = LoggerFactory.getLogger(RegisterTransaction.class);
+
 	//帐户信息
 	private Account account;
 
@@ -37,11 +34,11 @@ public class RegisterTransaction extends Transaction {
 		super(network);
 		this.setVersion(VERSION_REGISTER);
 		this.account = account;
-		this.inputs = new ArrayList<RegisterInput>();
+		this.inputs = new ArrayList<Input>();
 		RegisterInput input = new RegisterInput(account);
 		this.inputs.add(input);
 		
-		this.outputs = new ArrayList<RegisterOutput>();
+		this.outputs = new ArrayList<TransactionOutput>();
 		RegisterOutput output = new RegisterOutput(account);
 		this.outputs.add(output);
 	}
@@ -50,15 +47,73 @@ public class RegisterTransaction extends Transaction {
         super(params, payloadBytes);
     }
 	
-
-	@Override
-	protected TransactionInput parseInput() {
-		return super.parseInput();
+	/**
+	 * 反序列化交易的输出部分
+	 * @return
+	 */
+	protected TransactionOutput parseOutput() {
+        //赎回脚本名的长度
+        int signLength = (int)readVarInt();
+        byte[] signbs = readBytes(signLength);
+        
+        Script script = new Script(signbs);
+        
+		RegisterOutput output = new RegisterOutput(script);
+        output.setParent(this);
+        
+        return output;
 	}
 	
-	@Override
-	protected TransactionOutput parseOutput() {
-		return super.parseOutput();
+	/**
+	 * 反序列化交易的输入部分
+	 * @return 
+	 * @return
+	 */
+	protected <T extends Input> Input parseInput() {
+		if(account == null)
+			account = new Account();
+		RegisterInput input = new RegisterInput(account);
+        input.setParent(this);
+        
+        Utils.checkNotNull(account);
+        
+        byte type = payload[cursor];
+		if(type == AccountType.SYSTEM.value()) {
+			account.setAccountType(AccountType.SYSTEM);
+		} else if(type == AccountType.CERT.value()) {
+			account.setAccountType(AccountType.CERT);
+		}
+		cursor ++;
+        
+		//帐户主体
+		long bodyLength = readVarInt();
+		account.setBody(readBytes((int)bodyLength));
+		
+        //签名
+		long signLength = readVarInt();
+		input.setScriptBytes(readBytes((int)signLength));
+		
+        return input;
+	}
+	
+	/**
+	 * 验证交易的合法性
+	 */
+	public void verfify() throws VerificationException {
+		
+	}
+	
+	/**
+	 * 验证脚本
+	 */
+	public void verfifyScript() throws VerificationException {
+		Utils.checkState(inputs.size() > 0);
+		Utils.checkState(outputs.size() > 0);
+		
+		RegisterInput input = (RegisterInput) inputs.get(0);
+		RegisterOutput output = (RegisterOutput) outputs.get(0);
+		
+		input.getScriptSig().run(this, output.getScript());
 	}
 
 	/**
@@ -67,7 +122,11 @@ public class RegisterTransaction extends Transaction {
 	 * @param prikey2
 	 */
 	public void calculateSignature(ECKey key1, ECKey key2) {
+		Script script = ScriptBuilder.createEmptyInputScript(Transaction.VERSION_REGISTER, account.getAddress().getHash160());
+		inputs.get(0).setScriptSig(script);
+		
 		Sha256Hash hash = Sha256Hash.of(baseSerialize());
+		
 		//签名
 		ECDSASignature ecSign1 = key1.sign(hash);
 		byte[] sign1 = ecSign1.encodeToDER();
@@ -78,6 +137,14 @@ public class RegisterTransaction extends Transaction {
 		inputs.get(0).setScriptSig(
 				ScriptBuilder.createRegisterInputScript(account.getAddress().getHash160(), 
 						new byte[][] {sign1, sign2}, getVersion()));
-		
 	}
+
+	public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
+	}
+
 }

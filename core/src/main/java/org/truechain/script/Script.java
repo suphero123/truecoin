@@ -25,10 +25,12 @@ import org.truechain.account.Address;
 import org.truechain.core.UnsafeByteArrayOutputStream;
 import org.truechain.core.exception.ProtocolException;
 import org.truechain.core.exception.ScriptException;
+import org.truechain.core.exception.VerificationException;
 import org.truechain.crypto.ECKey;
 import org.truechain.crypto.Sha256Hash;
 import org.truechain.crypto.TransactionSignature;
 import org.truechain.network.NetworkParameters;
+import org.truechain.transaction.RegisterTransaction;
 import org.truechain.transaction.Transaction;
 import org.truechain.utils.Hex;
 import org.truechain.utils.Utils;
@@ -786,10 +788,9 @@ public class Script {
     ////////////////////// Script verification and helpers ////////////////////////////////
     
     private static boolean castToBool(byte[] data) {
-        for (int i = 0; i < data.length; i++)
-        {
-            // "Can be negative zero" - Bitcoin Core (see OpenSSL's BN_bn2mpi)
+        for (int i = 0; i < data.length; i++) {
             if (data[i] != 0)
+            	//除了byte[]{0}之外都为true
                 return !(i == data.length - 1 && (data[i] & 0xFF) == 0x80);
         }
         return false;
@@ -1417,8 +1418,6 @@ public class Script {
         // prevent this condition. Alternatively we could test all
         // inputs, but testing just this input minimizes the data
         // required to prove correct CHECKLOCKTIMEVERIFY execution.
-        if (!txContainingThis.getInput(index).hasSequence())
-            throw new ScriptException("Transaction contains a final transaction input for a CHECKLOCKTIMEVERIFY script.");
     }
 
     private static void executeCheckSig(Transaction txContainingThis, int index, Script script, LinkedList<byte[]> stack,
@@ -1669,4 +1668,238 @@ public class Script {
     public int hashCode() {
         return Arrays.hashCode(getQuickProgram());
     }
+    
+    /**
+     * 运行脚本
+     */
+    public void run(RegisterTransaction tx, Script out) throws VerificationException {
+    	//TODO
+    	
+    	LinkedList<byte[]> stack = new LinkedList<byte[]>();
+        
+    	//执行输入脚本
+        executeScript(tx, this, stack);
+
+        //执行输出脚本
+        executeScript(tx, out, stack);
+        
+        if (stack.size() == 0)
+            throw new ScriptException("Stack empty at end of script execution.");
+        
+        if (!castToBool(stack.pollLast()))
+            throw new ScriptException("Script resulted in a non-true stack: " + stack);
+    }
+    
+    public static void executeScript(RegisterTransaction tx, Script script, LinkedList<byte[]> stack) {
+    	//操作码数量，最多允许501个
+    	int opCount = 0;	
+    	
+        int lastCodeSepLocation = 0;
+        
+        LinkedList<byte[]> altstack = new LinkedList<byte[]>();
+        LinkedList<Boolean> ifStack = new LinkedList<Boolean>();
+        
+        for (ScriptChunk chunk : script.chunks) {
+            boolean shouldExecute = !ifStack.contains(false);
+            //压入空值
+            if (chunk.opcode == OP_0) {
+                if (!shouldExecute)
+                    continue;
+                stack.add(new byte[] {});
+            } else if (!chunk.isOpCode()) {
+                if (chunk.data.length > MAX_SCRIPT_ELEMENT_SIZE)
+                    throw new ScriptException("Attempted to push a data string larger than 520 bytes");
+                
+                if (!shouldExecute)
+                    continue;
+                stack.add(chunk.data);
+            } else {
+                int opcode = chunk.opcode;
+                if (opcode > OP_16) {
+                    opCount++;
+                    if (opCount > 501)
+                        throw new ScriptException("More script operations than is allowed");
+                }
+                switch (opcode) {
+                case OP_IF:
+                    if (!shouldExecute) {
+                        ifStack.add(false);
+                        continue;
+                    }
+                    if (stack.size() < 1)
+                        throw new ScriptException("Attempted OP_IF on an empty stack");
+                    ifStack.add(castToBool(stack.pollLast()));
+                    continue;
+                case OP_NOTIF:
+                    if (!shouldExecute) {
+                        ifStack.add(false);
+                        continue;
+                    }
+                    if (stack.size() < 1)
+                        throw new ScriptException("Attempted OP_NOTIF on an empty stack");
+                    ifStack.add(!castToBool(stack.pollLast()));
+                    continue;
+                case OP_ELSE:
+                    if (ifStack.isEmpty())
+                        throw new ScriptException("Attempted OP_ELSE without OP_IF/NOTIF");
+                    ifStack.add(!ifStack.pollLast());
+                    continue;
+                case OP_ENDIF:
+                    if (ifStack.isEmpty())
+                        throw new ScriptException("Attempted OP_ENDIF without OP_IF/NOTIF");
+                    ifStack.pollLast();
+                    continue;
+                }
+                
+                if (!shouldExecute)
+                    continue;
+                
+                switch(opcode) {
+                // OP_0 is no opcode
+                case OP_1NEGATE:
+                    stack.add(Utils.reverseBytes(Utils.encodeMPI(BigInteger.ONE.negate(), false)));
+                    break;
+                case OP_1:
+                case OP_2:
+                case OP_3:
+                case OP_4:
+                case OP_5:
+                case OP_6:
+                case OP_7:
+                case OP_8:
+                case OP_9:
+                case OP_10:
+                case OP_11:
+                case OP_12:
+                case OP_13:
+                case OP_14:
+                case OP_15:
+                case OP_16:
+                    stack.add(Utils.reverseBytes(Utils.encodeMPI(BigInteger.valueOf(decodeFromOpN(opcode)), false)));
+                    break;
+                case OP_IFDUP:
+                    if (stack.size() < 1)
+                        throw new ScriptException("Attempted OP_IFDUP on an empty stack");
+                    if (castToBool(stack.getLast()))
+                        stack.add(stack.getLast());
+                    break;
+                case OP_EQUALVERIFY:	//判断栈顶2元素是否相等
+                    if (stack.size() < 2)
+                        throw new ScriptException("Attempted OP_EQUALVERIFY on a stack with size < 2");
+                    byte[] b1 = stack.pollLast();
+                    byte[] b2 = stack.pollLast();
+                    
+                    if (!Arrays.equals(b1, b2))
+                        throw new ScriptException("OP_EQUALVERIFY: non-equal data");
+                    break;
+                case OP_VERMG:	//判断栈顶元素（应该为交易类型）是否是账户管理交易
+                	if (stack.size() < 1)
+                        throw new ScriptException("Attempted OP_VERMG on a stack with size < 1");
+                	byte[] mgtypes = stack.pollLast();
+                	if(mgtypes.length != 1) {
+                		throw new ScriptException("Attempted OP_VERMG on a stack with not a transaction type");
+                	}
+                	int mgType = mgtypes[0];
+                	if(mgType == Transaction.VERSION_REGISTER || mgType == Transaction.VERSION_CHANGEPWD) {
+                		stack.add(new byte[] {1});
+                	} else {
+                		stack.add(new byte[] {0});
+                	}
+                	break;
+                case OP_VERTR:	//判断栈顶元素（应该为交易类型）是否是支付交易
+                	if (stack.size() < 1)
+                		throw new ScriptException("Attempted OP_VERTR on a stack with size < 1");
+                	byte[] trtypes = stack.pollLast();
+                	if(trtypes.length != 1) {
+                		throw new ScriptException("Attempted OP_VERTR on a stack with not a transaction type");
+                	}
+                	int trType = trtypes[0];
+                	if(trType == Transaction.VERSION_PAY) {
+                		stack.add(new byte[] {1});
+                	} else {
+                		stack.add(new byte[] {0});
+                	}
+                	break;
+                case OP_RIPEMD160:
+                    if (stack.size() < 1)
+                        throw new ScriptException("Attempted OP_RIPEMD160 on an empty stack");
+                    RIPEMD160Digest digest = new RIPEMD160Digest();
+                    byte[] dataToHash = stack.pollLast();
+                    digest.update(dataToHash, 0, dataToHash.length);
+                    byte[] ripmemdHash = new byte[20];
+                    digest.doFinal(ripmemdHash, 0);
+                    stack.add(ripmemdHash);
+                    break;
+                case OP_SHA1:
+                    if (stack.size() < 1)
+                        throw new ScriptException("Attempted OP_SHA1 on an empty stack");
+                    try {
+                        stack.add(MessageDigest.getInstance("SHA-1").digest(stack.pollLast()));
+                    } catch (NoSuchAlgorithmException e) {
+                        throw new RuntimeException(e);  // Cannot happen.
+                    }
+                    break;
+                case OP_SHA256:
+                    if (stack.size() < 1)
+                        throw new ScriptException("Attempted OP_SHA256 on an empty stack");
+                    stack.add(Sha256Hash.hash(stack.pollLast()));
+                    break;
+                case OP_HASH160:
+                    if (stack.size() < 1)
+                        throw new ScriptException("Attempted OP_HASH160 on an empty stack");
+                    byte[] b = stack.pollLast();
+                    stack.add(Utils.sha256hash160(ECKey.fromPublicOnly(b).getPubKey(false)));
+                    break;
+                case OP_HASH256:
+                    if (stack.size() < 1)
+                        throw new ScriptException("Attempted OP_SHA256 on an empty stack");
+                    stack.add(Sha256Hash.hashTwice(stack.pollLast()));
+                    break;
+                case OP_CODESEPARATOR:
+                    lastCodeSepLocation = chunk.getStartLocationInProgram() + 1;
+                    break;
+                case OP_CHECKSIG:
+                case OP_CHECKSIGVERIFY:
+                    if (tx == null)
+                        throw new IllegalStateException("tx is null");
+                    executeCheckSig(tx, stack, opcode);
+                    break;
+                default:
+                    throw new ScriptException("Script used a reserved opcode " + opcode);
+                }
+            }
+            
+            if (stack.size() + altstack.size() > 1000 || stack.size() + altstack.size() < 0)
+                throw new ScriptException("Stack size exceeded range");
+        }
+        
+        if (!ifStack.isEmpty())
+            throw new ScriptException("OP_IF/OP_NOTIF without OP_ENDIF");
+    }
+
+    /*
+     * 验证交易签名
+     */
+	private static void executeCheckSig(RegisterTransaction tx, LinkedList<byte[]> stack, int opcode) {
+		
+		if(stack.size() < 4) {
+			throw new ScriptException("Check sign of the stack size < 4");
+		}
+		
+		byte[] mgPubkey2 = stack.pollLast();
+		byte[] mgPubkey1 = stack.pollLast();
+		byte[] sign2 = stack.pollLast();
+		byte[] sign1 = stack.pollLast();
+		
+		tx.getInput(0).setScriptSig(ScriptBuilder.createEmptyInputScript(
+				tx.getVersion(), tx.getAccount().getAddress().getHash160()));
+		byte[] hash = Sha256Hash.of(tx.baseSerialize()).getBytes();
+		
+		if(!ECKey.fromPublicOnly(mgPubkey1).verify(hash, sign1) || !ECKey.fromPublicOnly(mgPubkey2).verify(hash, sign2)) {
+			throw new ScriptException("Check sign fail");
+		}
+		
+		if (opcode == OP_CHECKSIG)
+            stack.add(new byte[] {1});
+	}
 }

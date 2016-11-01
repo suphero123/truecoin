@@ -494,8 +494,8 @@ public class ScriptBuilder {
         builder.data(signs[0]);
         builder.data(signs[1]);
         
-        builder.data(hash160);
         builder.smallNum(version);
+        builder.data(hash160);
         
         return builder.build();
     }
@@ -512,13 +512,12 @@ public class ScriptBuilder {
         builder.data(hash160);
         builder.op(OP_EQUALVERIFY);
 
-        builder.op(ScriptOpCodes.OP_IF);
         builder.op(ScriptOpCodes.OP_VERMG);
+        builder.op(ScriptOpCodes.OP_IF);
         builder.data(mgpubkeys[0]);
         builder.data(mgpubkeys[1]);
         
         builder.op(ScriptOpCodes.OP_ELSE);
-        builder.op(ScriptOpCodes.OP_VERTR);
         builder.data(trpubkeys[0]);
         builder.data(trpubkeys[1]);
         builder.op(ScriptOpCodes.OP_ENDIF);
@@ -537,8 +536,8 @@ public class ScriptBuilder {
 	public static Script createEmptyInputScript(int version, byte[] hash160) {
 		ScriptBuilder builder = new ScriptBuilder();
 		
+		builder.smallNum(version);
         builder.data(hash160);
-        builder.smallNum(version);
         
         return builder.build();
 	}
