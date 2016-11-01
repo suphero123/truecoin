@@ -2,7 +2,7 @@ package org.truechain.net;
 
 import java.net.InetSocketAddress;
 
-import org.truechain.core.PeerGroup;
+import org.truechain.kits.PeerKit;
 import org.truechain.network.MainNetParams;
 import org.truechain.network.NetworkParameters;
 import org.truechain.network.NodeSeedManager;
@@ -22,7 +22,7 @@ public class PeerGroupTest2 {
 		
 		NetworkParameters network = new MainNetParams(seedManager, 8888);
 		
-		PeerGroup peerGroup = new PeerGroup(network, 10);
+		PeerKit peerGroup = new PeerKit(network, 10);
 		
 		peerGroup.startSyn();
 

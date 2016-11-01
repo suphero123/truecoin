@@ -4,6 +4,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.truechain.core.Coin;
+import org.truechain.core.exception.AddressFormatException;
 import org.truechain.crypto.Sha256Hash;
 import org.truechain.network.NetworkParameters;
 import org.truechain.network.Networks;

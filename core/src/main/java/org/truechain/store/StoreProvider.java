@@ -1,5 +1,7 @@
 package org.truechain.store;
 
+import java.io.IOException;
+
 /**
  * 存储服务
  * @author ln
@@ -12,4 +14,6 @@ public interface StoreProvider {
 	Store get(byte[] key);
 	
 	void delete(byte[] key);
+	
+	void close() throws IOException;
 }

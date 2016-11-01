@@ -31,6 +31,10 @@ import org.truechain.utils.Utils;
  *
  */
 public class Transaction extends Message {
+	
+	public static final int VERSION_REGISTER = 1;	//帐户注册
+	public static final int VERSION_CHANGEPWD = 2;	//修改密码
+	public static final int VERSION_PAY = 6;		//普通支付交易
 
 	//锁定时间标识，小于该数表示为块数，大于则为秒级时间戳
 	public static final int LOCKTIME_THRESHOLD = 500000000;
@@ -44,10 +48,10 @@ public class Transaction extends Message {
 	private List<TransactionOutput> outputs;
 	
 	//tx hash
-	private Sha256Hash hash;
-	private long lockTime;
+	protected Sha256Hash hash;
+	protected long lockTime;
 	//交易版本
-	private long version;
+	protected int version;
 	
 	public enum SigHash {
         ALL(1),
@@ -107,66 +111,82 @@ public class Transaction extends Message {
 	protected void parse() throws ProtocolException {
 		cursor = offset;
 		
-		version = readUint32();
+		version = (int) readUint32();
 
 		//交易输入数量
         long numInputs = readVarInt();
         inputs = new ArrayList<TransactionInput>((int) numInputs);
         for (int i = 0; i < numInputs; i++) {
-        	
-            TransactionInput input = new TransactionInput();
-            input.setParent(this);
-            
-            //上笔交易的引用
-            TransactionOutput pre = new TransactionOutput();
-            Transaction t = new Transaction(network);
-            pre.setParent(t);
-            pre.getParent().setHash(Sha256Hash.wrap(readBytes(32)));
-            pre.setIndex((int)readUint32());
-            
-            input.setFrom(pre);
-            
-            //输入签名的长度
-            int signLength = (int)readVarInt();
-            input.setScriptBytes(readBytes(signLength));
-            input.setSequence(readUint32());
-
-            //通过公匙生成赎回脚本
-            ECKey key = ECKey.fromPublicOnly(input.getScriptSig().getPubKey());
-
-            //TODO 根据交易类型，生成对应的赎回脚本
-            
-    		Script script = ScriptBuilder.createOutputScript(
-    				AccountTool.newAddressFromKey(network, (int)version, key));
-    		
-            pre.setScript(script);
-            
-            inputs.add(input);
+            inputs.add(parseInput());
         }
 
 		//交易输出数量
         long numOutputs = readVarInt();
         outputs = new ArrayList<TransactionOutput>((int) numOutputs);
         for (int i = 0; i < numOutputs; i++) {
-        	
-            TransactionOutput output = new TransactionOutput();
-            output.setParent(this);
-            output.setIndex(i);
-            output.setValue(readInt64());
-            //赎回脚本名的长度
-            int signLength = (int)readVarInt();
-            output.setScriptBytes(readBytes(signLength));
-            
+        	TransactionOutput output = parseOutput();
+        	output.setIndex(i);
             outputs.add(output);
         }
         lockTime = readUint32();
         length = cursor - offset;
+	}
+	
+	/**
+	 * 反序列化交易的输出部分
+	 * @return
+	 */
+	protected TransactionOutput parseOutput() {
+		TransactionOutput output = new TransactionOutput();
+        output.setParent(this);
+        output.setValue(readInt64());
+        //赎回脚本名的长度
+        int signLength = (int)readVarInt();
+        output.setScriptBytes(readBytes(signLength));
+        return output;
+	}
+	
+	/**
+	 * 反序列化交易的输入部分
+	 * @return
+	 */
+	protected TransactionInput parseInput() {
+		TransactionInput input = new TransactionInput();
+        input.setParent(this);
+        
+        //上笔交易的引用
+        TransactionOutput pre = new TransactionOutput();
+        Transaction t = new Transaction(network);
+        pre.setParent(t);
+        pre.getParent().setHash(Sha256Hash.wrap(readBytes(32)));
+        pre.setIndex((int)readUint32());
+        
+        input.setFrom(pre);
+        
+        //输入签名的长度
+        int signLength = (int)readVarInt();
+        input.setScriptBytes(readBytes(signLength));
+        input.setSequence(readUint32());
+
+        //通过公匙生成赎回脚本
+        ECKey key = ECKey.fromPublicOnly(input.getScriptSig().getPubKey());
+
+        //TODO 根据交易类型，生成对应的赎回脚本
+        
+		Script script = ScriptBuilder.createOutputScript(
+				AccountTool.newAddressFromKey(network, (int)version, key));
+		
+        pre.setScript(script);
+        
+        return input;
 	}
 
 	/**
 	 * 验证交易的合法性
 	 */
 	public void verfify() throws VerificationException {
+		//TODO  运行脚本，验证交易的合法性
+		
 		
 	}
 
@@ -191,6 +211,7 @@ public class Transaction extends Message {
             	
             } else if ((sigHashType & 0x1f) == SigHash.SINGLE.value) {
             	//TODO
+            	
             }
 
             ByteArrayOutputStream bos = new UnsafeByteArrayOutputStream(tx.length == UNKNOWN_LENGTH ? 256 : tx.length + 4);
@@ -315,10 +336,10 @@ public class Transaction extends Message {
 	public void setHash(Sha256Hash hash) {
 		this.hash = hash;
 	}
-	public void setVersion(long version) {
+	public void setVersion(int version) {
 		this.version = version;
 	}
-	public long getVersion() {
+	public int getVersion() {
 		return version;
 	}
 	

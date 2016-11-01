@@ -2,16 +2,14 @@ package org.truechain.account;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
 import java.math.BigInteger;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.truechain.account.AccountTool;
-import org.truechain.account.Address;
 import org.truechain.crypto.ECKey;
 import org.truechain.kits.AccountKit;
+import org.truechain.kits.PeerKit;
 import org.truechain.network.NetworkParameters;
 import org.truechain.network.TestNetworkParameters;
 import org.truechain.utils.Hex;
@@ -58,10 +56,20 @@ public class AccountTest {
 	}
 	
 	@Test
-	public void testAccountManager() throws IOException {
+	public void testAccountManager() throws Exception {
 		NetworkParameters network = TestNetworkParameters.get();
-		String accountFile = "./data/account/account.dat";
-		AccountKit accountManager = new AccountKit(network, accountFile);
+		String dataDir = "./data";
 		
+		PeerKit peerKit = new PeerKit(network);
+		AccountKit accountKit = new AccountKit(network, peerKit, dataDir);
+		try {
+			if(accountKit.getAccountList().isEmpty()) {
+				accountKit.createNewAccount("123456", "0123456");
+			}
+			accountKit.createNewAccount("123456", "0123456");
+		} finally {
+			accountKit.close();
+			peerKit.stop();
+		}
 	}
 }

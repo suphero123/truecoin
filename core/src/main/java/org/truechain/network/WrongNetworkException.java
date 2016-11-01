@@ -18,7 +18,7 @@ package org.truechain.network;
 
 import java.util.Arrays;
 
-import org.truechain.account.AddressFormatException;
+import org.truechain.core.exception.AddressFormatException;
 
 /**
  * This exception is thrown by the Address class when you try and decode an address with a version code that isn't

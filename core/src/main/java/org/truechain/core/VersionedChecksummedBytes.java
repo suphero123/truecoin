@@ -21,7 +21,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 
-import org.truechain.account.AddressFormatException;
+import org.truechain.core.exception.AddressFormatException;
 import org.truechain.crypto.Sha256Hash;
 import org.truechain.utils.Base58;
 import org.truechain.utils.Utils;

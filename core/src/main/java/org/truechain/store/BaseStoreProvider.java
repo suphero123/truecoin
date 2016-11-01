@@ -1,5 +1,7 @@
 package org.truechain.store;
 
+import java.io.IOException;
+
 import org.truechain.db.Db;
 import org.truechain.db.LevelDB;
 import org.truechain.network.NetworkParameters;
@@ -57,6 +59,14 @@ public abstract class BaseStoreProvider implements StoreProvider {
 	@Override
 	public void delete(byte[] key) {
 		db.delete(key);
+	}
+	
+	/**
+	 * 释放资源
+	 * @throws IOException 
+	 */
+	public void close() throws IOException {
+		db.close();
 	}
 
 }

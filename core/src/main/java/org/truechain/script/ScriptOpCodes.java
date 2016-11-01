@@ -158,6 +158,14 @@ public final class ScriptOpCodes {
     public static final int OP_NOP8 = 0xb7;
     public static final int OP_NOP9 = 0xb8;
     public static final int OP_NOP10 = 0xb9;
+    
+    //OP_MG 交易类型判断，栈顶元素是否是帐户管理类交易  Transaction.VERSION_REGISTER, Transaction.VERSION_CHANGEPWD
+    public static final int OP_VERMG = 0xc1;
+    //交易类型判断，栈顶元素是否是资金交易  Transaction.VERSION_PAY
+    public static final int OP_VERTR = 0xc2;
+    //根据栈顶元素的交易hash获取公匙
+    public static final int OP_PUBKEY = 0xc3;
+    
     public static final int OP_INVALIDOPCODE = 0xff;
 
     private static final Map<Integer, String> opCodeMap = new HashMap<Integer, String>();
@@ -277,6 +285,10 @@ public final class ScriptOpCodes {
         opCodeMap.put(OP_NOP9, "NOP9");
         opCodeMap.put(OP_NOP10, "NOP10");
         
+        opCodeMap.put(OP_VERMG, "VERMG");
+        opCodeMap.put(OP_VERTR, "VERTR");
+        opCodeMap.put(OP_PUBKEY, "PUBKEY");
+        
         opCodeNameMap.put("0", OP_0);
         opCodeNameMap.put("PUSHDATA1", OP_PUSHDATA1);
         opCodeNameMap.put("PUSHDATA2", OP_PUSHDATA2);
@@ -389,6 +401,10 @@ public final class ScriptOpCodes {
         opCodeNameMap.put("NOP8", OP_NOP8);
         opCodeNameMap.put("NOP9", OP_NOP9);
         opCodeNameMap.put("NOP10", OP_NOP10);
+
+        opCodeNameMap.put("VERMG", OP_VERMG);
+        opCodeNameMap.put("VERTR", OP_VERTR);
+        opCodeNameMap.put("PUBKEY", OP_PUBKEY);
     }
 
     /**

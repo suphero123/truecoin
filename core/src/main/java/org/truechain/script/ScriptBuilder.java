@@ -480,4 +480,66 @@ public class ScriptBuilder {
         builder.smallNum(1); // Use the CHECKLOCKTIMEVERIFY if branch
         return builder.build();
     }
+    
+    /**
+     * 帐户注册输入脚本
+     * @param hash160
+     * @param signs
+     * @param version
+     * @return
+     */
+    public static Script createRegisterInputScript(byte[] hash160, byte[][] signs, int version) {
+    	ScriptBuilder builder = new ScriptBuilder();
+    	
+        builder.data(signs[0]);
+        builder.data(signs[1]);
+        
+        builder.data(hash160);
+        builder.smallNum(version);
+        
+        return builder.build();
+    }
+    
+    /**
+     * 帐户注册输出脚本
+     * @param hash160
+     * @param mgpubkeys
+     * @param trpubkeys
+     * @return
+     */
+    public static Script createRegisterOutScript(byte[] hash160, byte[][] mgpubkeys, byte[][] trpubkeys) {
+    	ScriptBuilder builder = new ScriptBuilder();
+        builder.data(hash160);
+        builder.op(OP_EQUALVERIFY);
+
+        builder.op(ScriptOpCodes.OP_IF);
+        builder.op(ScriptOpCodes.OP_VERMG);
+        builder.data(mgpubkeys[0]);
+        builder.data(mgpubkeys[1]);
+        
+        builder.op(ScriptOpCodes.OP_ELSE);
+        builder.op(ScriptOpCodes.OP_VERTR);
+        builder.data(trpubkeys[0]);
+        builder.data(trpubkeys[1]);
+        builder.op(ScriptOpCodes.OP_ENDIF);
+        
+        builder.op(ScriptOpCodes.OP_CHECKSIG);
+        
+        return builder.build();
+    }
+
+    /**
+     * 创建一个空签名
+     * @param version
+     * @param hash160
+     * @return
+     */
+	public static Script createEmptyInputScript(int version, byte[] hash160) {
+		ScriptBuilder builder = new ScriptBuilder();
+		
+        builder.data(hash160);
+        builder.smallNum(version);
+        
+        return builder.build();
+	}
 }

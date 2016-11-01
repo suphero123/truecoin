@@ -1,6 +1,6 @@
 package org.truechain.net;
 
-import org.truechain.core.PeerGroup;
+import org.truechain.kits.PeerKit;
 import org.truechain.network.MainNetParams;
 import org.truechain.network.NetworkParameters;
 import org.truechain.network.RemoteSeedManager;
@@ -13,7 +13,7 @@ public class PeerGroupTest {
 		
 		NetworkParameters params = new MainNetParams(seedManager, 6888);
 		
-		PeerGroup peerGroup = new PeerGroup(params, 5);
+		PeerKit peerGroup = new PeerKit(params, 5);
 		
 		peerGroup.startSyn();
 		
