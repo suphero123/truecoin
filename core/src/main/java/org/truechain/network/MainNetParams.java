@@ -2,6 +2,7 @@ package org.truechain.network;
 
 import org.truechain.message.DefaultMessageSerializer;
 import org.truechain.message.MessageSerializer;
+import org.truechain.store.Block;
 
 public class MainNetParams extends NetworkParameters {
 	
@@ -31,6 +32,12 @@ public class MainNetParams extends NetworkParameters {
 	@Override
 	public MessageSerializer getSerializer(boolean parseRetain) {
 		return new DefaultMessageSerializer(this);
+	}
+
+	@Override
+	public Block getGengsisBlock() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

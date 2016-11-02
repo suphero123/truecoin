@@ -19,7 +19,7 @@ public class TransactionInput implements Input {
 	private Transaction parent;
 	//上次的输出
 	private TransactionOutput from;
-	
+
 	private long sequence;
 	private byte[] scriptBytes;
 	private Script scriptSig;
@@ -97,5 +97,10 @@ public class TransactionInput implements Input {
 	public void setScriptSig(Script scriptSig) {
 		this.scriptSig = scriptSig;
 		this.scriptBytes = scriptSig.getProgram();
+	}
+
+	public void setType(int i) {
+		// TODO Auto-generated method stub
+		
 	}
 }

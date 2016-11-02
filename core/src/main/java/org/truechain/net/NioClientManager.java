@@ -62,6 +62,7 @@ public class NioClientManager implements ClientConnectionManager {
     private NewInConnectionListener newInConnectionListener;
     
     private boolean isServer = false; //是否启动本地监听服务 ， SPV就不需要
+    private ServerSocket serverSocket;
     
     public NioClientManager(NetworkParameters network, boolean isServer, int port) {
     	try {
@@ -75,7 +76,7 @@ public class NioClientManager implements ClientConnectionManager {
 	            // 服务器配置为非阻塞  
 	            serverSocketChannel.configureBlocking(false);  
 	            // 检索与此通道关联的服务器套接字  
-	            ServerSocket serverSocket = serverSocketChannel.socket();  
+	            serverSocket = serverSocketChannel.socket();  
 	            // 进行服务的绑定  
 	            serverSocket.bind(new InetSocketAddress(port));  
 	            // 注册到selector，等待连接  
@@ -178,8 +179,9 @@ public class NioClientManager implements ClientConnectionManager {
     }
     
     @Override
-    public void stop() {
-    	executor.shutdown();
+    public void stop() throws IOException {
+    	executor.shutdownNow();
+        serverSocket.close();
         log.info("stoped service");
     }
 

@@ -35,8 +35,6 @@ import org.truechain.transaction.Transaction;
 import org.truechain.utils.Hex;
 import org.truechain.utils.Utils;
 
-import com.sun.istack.internal.Nullable;
-
 /**
  * <p>Programs embedded inside transactions that control redemption of payments.</p>
  *
@@ -440,7 +438,7 @@ public class Script {
      * Having incomplete input script allows to pass around partially signed tx.
      * It is expected that this program later on will be updated with proper signatures.
      */
-    public Script createEmptyInputScript(@Nullable ECKey key, @Nullable Script redeemScript) {
+    public Script createEmptyInputScript(ECKey key, Script redeemScript) {
         if (isSentToAddress()) {
             Utils.checkState(key != null, "Key required to create pay-to-address input script");
             return ScriptBuilder.createInputScript(null, key);
@@ -644,7 +642,7 @@ public class Script {
      * Returns number of bytes required to spend this script. It accepts optional ECKey and redeemScript that may
      * be required for certain types of script to estimate target size.
      */
-    public int getNumberOfBytesRequiredToSpend(@Nullable ECKey pubKey, @Nullable Script redeemScript) {
+    public int getNumberOfBytesRequiredToSpend(ECKey pubKey, Script redeemScript) {
         if (isPayToScriptHash()) {
             // scriptSig: <sig> [sig] [sig...] <redeemscript>
             Utils.checkState(redeemScript != null, "P2SH script requires redeemScript to be spent");
@@ -839,7 +837,7 @@ public class Script {
      * instead.
      */
     @Deprecated
-    public static void executeScript(@Nullable Transaction txContainingThis, long index,
+    public static void executeScript(Transaction txContainingThis, long index,
                                      Script script, LinkedList<byte[]> stack, boolean enforceNullDummy) throws ScriptException {
         final EnumSet<VerifyFlag> flags = enforceNullDummy
             ? EnumSet.of(VerifyFlag.NULLDUMMY)
@@ -855,7 +853,7 @@ public class Script {
      * is useful if you need more precise control or access to the final state of the stack. This interface is very
      * likely to change in future.
      */
-    public static void executeScript(@Nullable Transaction txContainingThis, long index,
+    public static void executeScript(Transaction txContainingThis, long index,
                                      Script script, LinkedList<byte[]> stack, Set<VerifyFlag> verifyFlags) throws ScriptException {
         int opCount = 0;
         int lastCodeSepLocation = 0;
@@ -1800,7 +1798,7 @@ public class Script {
                 		throw new ScriptException("Attempted OP_VERMG on a stack with not a transaction type");
                 	}
                 	int mgType = mgtypes[0];
-                	if(mgType == Transaction.VERSION_REGISTER || mgType == Transaction.VERSION_CHANGEPWD) {
+                	if(mgType == Transaction.TYPE_REGISTER || mgType == Transaction.TYPE_CHANGEPWD) {
                 		stack.add(new byte[] {1});
                 	} else {
                 		stack.add(new byte[] {0});
@@ -1814,7 +1812,7 @@ public class Script {
                 		throw new ScriptException("Attempted OP_VERTR on a stack with not a transaction type");
                 	}
                 	int trType = trtypes[0];
-                	if(trType == Transaction.VERSION_PAY) {
+                	if(trType == Transaction.TYPE_PAY) {
                 		stack.add(new byte[] {1});
                 	} else {
                 		stack.add(new byte[] {0});
@@ -1882,6 +1880,8 @@ public class Script {
      */
 	private static void executeCheckSig(RegisterTransaction tx, LinkedList<byte[]> stack, int opcode) {
 		
+		//复制一个tx，否则会导致里面的数据被修改
+		tx = new RegisterTransaction(tx.getNetwork(), tx.baseSerialize());
 		if(stack.size() < 4) {
 			throw new ScriptException("Check sign of the stack size < 4");
 		}
@@ -1892,7 +1892,7 @@ public class Script {
 		byte[] sign1 = stack.pollLast();
 		
 		tx.getInput(0).setScriptSig(ScriptBuilder.createEmptyInputScript(
-				tx.getVersion(), tx.getAccount().getAddress().getHash160()));
+				tx.getType(), tx.getAccount().getAddress().getHash160()));
 		byte[] hash = Sha256Hash.of(tx.baseSerialize()).getBytes();
 		
 		if(!ECKey.fromPublicOnly(mgPubkey1).verify(hash, sign1) || !ECKey.fromPublicOnly(mgPubkey2).verify(hash, sign2)) {

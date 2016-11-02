@@ -32,9 +32,11 @@ import org.truechain.utils.Utils;
  */
 public class Transaction extends Message {
 	
-	public static final int VERSION_REGISTER = 1;	//帐户注册
-	public static final int VERSION_CHANGEPWD = 2;	//修改密码
-	public static final int VERSION_PAY = 6;		//普通支付交易
+	public static final long VERSION = 1;
+	
+	public static final int TYPE_REGISTER = 1;	//帐户注册
+	public static final int TYPE_CHANGEPWD = 2;	//修改密码
+	public static final int TYPE_PAY = 6;		//普通支付交易
 
 	//锁定时间标识，小于该数表示为块数，大于则为秒级时间戳
 	public static final int LOCKTIME_THRESHOLD = 500000000;
@@ -51,7 +53,9 @@ public class Transaction extends Message {
 	protected Sha256Hash hash;
 	protected long lockTime;
 	//交易版本
-	protected int version;
+	protected long version;
+	//交易类型
+	protected int type;
 	
 	public enum SigHash {
         ALL(1),
@@ -189,6 +193,13 @@ public class Transaction extends Message {
 	public void verfify() throws VerificationException {
 		//TODO  运行脚本，验证交易的合法性
 		
+		
+	}
+
+	/**
+	 * 验证交易脚本
+	 */
+	public void verfifyScript() {
 		
 	}
 
@@ -338,11 +349,18 @@ public class Transaction extends Message {
 	public void setHash(Sha256Hash hash) {
 		this.hash = hash;
 	}
-	public void setVersion(int version) {
+	public void setVersion(long version) {
 		this.version = version;
 	}
-	public int getVersion() {
+	public long getVersion() {
 		return version;
 	}
-	
+
+	public int getType() {
+		return type;
+	}
+
+	public void setType(int type) {
+		this.type = type;
+	}
 }

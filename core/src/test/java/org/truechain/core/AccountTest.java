@@ -54,4 +54,15 @@ public class AccountTest {
 		address = Address.fromBase58(network, "179sduXmc57hbYsP5Ar476pJKkdx9CyiXD");
 		assertEquals(address.getHash160AsHex(), "437e59f902d96c513ecba8e997f982e40a65b461");
 	}
+	
+	public static void main(String[] args) {
+		TestNetworkParameters network = TestNetworkParameters.get();
+		for (int i = 0; i < 254; i++) {
+			Address address = AccountTool.newAddress(network, Address.VERSION_TEST_PK);
+			System.out.println(address);
+		}
+		
+		//生成测试地址
+		
+	}
 }

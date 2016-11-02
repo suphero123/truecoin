@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.truechain.core.exception.ProtocolException;
 import org.truechain.crypto.Sha256Hash;
 import org.truechain.network.NetworkParameters;
+import org.truechain.transaction.RegisterTransaction;
 import org.truechain.transaction.Transaction;
 import org.truechain.utils.Hex;
 import org.truechain.utils.Utils;
@@ -30,6 +31,7 @@ public class DefaultMessageSerializer extends MessageSerializer {
     	COMMANDS.put(PongMessage.class, "pong");
     	COMMANDS.put(VersionMessage.class, "version");
     	COMMANDS.put(VerackMessage.class, "verack");
+    	COMMANDS.put(RegisterTransaction.class, "accreg");
     }
 
 	public DefaultMessageSerializer(NetworkParameters network) {
@@ -131,6 +133,8 @@ public class DefaultMessageSerializer extends MessageSerializer {
         	message = new PingMessage(network, payloadBytes);
         } else if (command.equals("pong")) {
         	message = new PongMessage(network, payloadBytes);
+        } else if (command.equals("accreg")) {
+        	message = new RegisterTransaction(network, payloadBytes);
         } else {
         	log.warn("No support for deserializing message with name {}", command);
         	message = new UnknownMessage(network, command, payloadBytes);

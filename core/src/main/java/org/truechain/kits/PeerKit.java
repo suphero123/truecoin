@@ -1,5 +1,6 @@
 package org.truechain.kits;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -98,7 +99,7 @@ public class PeerKit implements TransactionBroadcaster {
 					peer.ping();
 				}
 			}
-		}, 0, 1, TimeUnit.SECONDS);
+		}, 0, 30, TimeUnit.SECONDS);
 	}
 
 	//初始化节点
@@ -115,7 +116,7 @@ public class PeerKit implements TransactionBroadcaster {
 		}.start();
 	}
 	//停止服务
-	public void stop() {
+	public void stop() throws IOException {
 		//关闭连接器
 		connectionManager.stop();
 		//关闭服务

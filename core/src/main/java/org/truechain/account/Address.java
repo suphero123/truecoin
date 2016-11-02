@@ -1,4 +1,5 @@
 package org.truechain.account;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -13,8 +14,6 @@ import org.truechain.script.Script;
 import org.truechain.utils.Base58;
 import org.truechain.utils.Hex;
 import org.truechain.utils.Utils;
-
-import com.sun.istack.internal.Nullable;
 
 /**
  * 系统帐户的地址
@@ -31,7 +30,7 @@ public class Address {
 	public static final int VERSION_VR = 9;
 
 	//测试地址
-	public static final int VERSION_TEST_PK = 102;
+	public static final int VERSION_TEST_PK = 128;
 
 	//默认地址版本
 	public static final int VERSION_DEFAULT = VERSION_PK;
@@ -80,7 +79,7 @@ public class Address {
      * @throws AddressFormatException
      * @throws WrongNetworkException
      */
-    public Address(@Nullable NetworkParameters network, String address) throws AddressFormatException, WrongNetworkException{
+    public Address(NetworkParameters network, String address) throws AddressFormatException, WrongNetworkException{
     	byte[] versionAndDataBytes = Base58.decodeChecked(address);
         byte versionByte = versionAndDataBytes[0];
         version = versionByte & 0xFF;
@@ -134,7 +133,7 @@ public class Address {
      * @return
      * @throws AddressFormatException
      */
-    public static Address fromBase58(@Nullable NetworkParameters network, String address) throws AddressFormatException {
+    public static Address fromBase58(NetworkParameters network, String address) throws AddressFormatException {
     	return new Address(network, address);
     }
 

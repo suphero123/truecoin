@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.spongycastle.crypto.digests.RIPEMD160Digest;
 import org.truechain.core.VarInt;
+import org.truechain.core.exception.VerificationException;
 import org.truechain.crypto.Sha256Hash;
 
 public class Utils {
@@ -293,7 +294,7 @@ public class Utils {
 					msg = (msg == null?object.toString():msg+object.toString());
 				}
 			}
-			throw new RuntimeException(msg);
+			throw new VerificationException(msg);
 		}
 	}
 

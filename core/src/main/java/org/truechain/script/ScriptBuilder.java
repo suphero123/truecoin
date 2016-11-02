@@ -46,8 +46,6 @@ import org.truechain.crypto.ECKey;
 import org.truechain.crypto.TransactionSignature;
 import org.truechain.utils.Utils;
 
-import com.sun.istack.internal.Nullable;
-
 /**
  * <p>Tools for the construction of commonly used script types. You don't normally need this as it's hidden behind
  * convenience methods on {@link org.bitcoinj.core.Transaction}, but they are useful when working with the
@@ -258,7 +256,7 @@ public class ScriptBuilder {
      * Creates a scriptSig that can redeem a pay-to-address output.
      * If given signature is null, incomplete scriptSig will be created with OP_0 instead of signature
      */
-    public static Script createInputScript(@Nullable TransactionSignature signature, ECKey pubKey) {
+    public static Script createInputScript(TransactionSignature signature, ECKey pubKey) {
         byte[] pubkeyBytes = pubKey.getPubKey();
         byte[] sigBytes = signature != null ? signature.encode() : new byte[]{};
         return new ScriptBuilder().data(sigBytes).data(pubkeyBytes).build();
@@ -268,7 +266,7 @@ public class ScriptBuilder {
      * Creates a scriptSig that can redeem a pay-to-pubkey output.
      * If given signature is null, incomplete scriptSig will be created with OP_0 instead of signature
      */
-    public static Script createInputScript(@Nullable TransactionSignature signature) {
+    public static Script createInputScript(TransactionSignature signature) {
         byte[] sigBytes = signature != null ? signature.encode() : new byte[]{};
         return new ScriptBuilder().data(sigBytes).build();
     }
@@ -312,7 +310,7 @@ public class ScriptBuilder {
      * Create a program that satisfies a pay-to-script hashed OP_CHECKMULTISIG program.
      * If given signature list is null, incomplete scriptSig will be created with OP_0 instead of signatures
      */
-    public static Script createP2SHMultiSigInputScript(@Nullable List<TransactionSignature> signatures,
+    public static Script createP2SHMultiSigInputScript(List<TransactionSignature> signatures,
                                                        Script multisigProgram) {
         List<byte[]> sigs = new ArrayList<byte[]>();
         if (signatures == null) {
@@ -332,7 +330,7 @@ public class ScriptBuilder {
      * Create a program that satisfies an OP_CHECKMULTISIG program, using pre-encoded signatures. 
      * Optionally, appends the script program bytes if spending a P2SH output.
      */
-    public static Script createMultiSigInputScriptBytes(List<byte[]> signatures, @Nullable byte[] multisigProgramBytes) {
+    public static Script createMultiSigInputScriptBytes(List<byte[]> signatures, byte[] multisigProgramBytes) {
         Utils.checkState(signatures.size() <= 16);
         ScriptBuilder builder = new ScriptBuilder();
         builder.smallNum(0);  // Work around a bug in CHECKMULTISIG that is now a required part of the protocol.
@@ -529,14 +527,14 @@ public class ScriptBuilder {
 
     /**
      * 创建一个空签名
-     * @param version
+     * @param type
      * @param hash160
      * @return
      */
-	public static Script createEmptyInputScript(int version, byte[] hash160) {
+	public static Script createEmptyInputScript(int type, byte[] hash160) {
 		ScriptBuilder builder = new ScriptBuilder();
 		
-		builder.smallNum(version);
+		builder.smallNum(type);
         builder.data(hash160);
         
         return builder.build();

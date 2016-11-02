@@ -1,13 +1,5 @@
 package org.truechain.utils;
 
-import com.sun.istack.internal.Nullable;
-
-/**
- * Support class for {@link MoreObjects#toStringHelper}.
- *
- * @author Jason Lee
- * @since 18.0 (since 2.0 as {@code Objects.ToStringHelper}.
- */
 public final class ToStringHelper {
 	
   private final String className;
@@ -40,7 +32,7 @@ public final class ToStringHelper {
    * is used, unless {@link #omitNullValues()} is called, in which case this
    * name/value pair will not be added.
    */
-  public ToStringHelper add(String name, @Nullable Object value) {
+  public ToStringHelper add(String name, Object value) {
     return addHolder(name, value);
   }
 
@@ -112,7 +104,7 @@ public final class ToStringHelper {
    *
    * @since 18.0 (since 11.0 as {@code Objects.ToStringHelper.omitNullValues()}.
    */
-  public ToStringHelper addValue(@Nullable Object value) {
+  public ToStringHelper addValue(Object value) {
     return addHolder(value);
   }
 
@@ -227,13 +219,13 @@ public final class ToStringHelper {
     return valueHolder;
   }
 
-  private ToStringHelper addHolder(@Nullable Object value) {
+  private ToStringHelper addHolder(Object value) {
     ValueHolder valueHolder = addHolder();
     valueHolder.value = value;
     return this;
   }
 
-  private ToStringHelper addHolder(String name, @Nullable Object value) {
+  private ToStringHelper addHolder(String name, Object value) {
     ValueHolder valueHolder = addHolder();
     valueHolder.value = value;
     valueHolder.name = Utils.checkNotNull(name);

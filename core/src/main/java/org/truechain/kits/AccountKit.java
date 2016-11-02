@@ -14,6 +14,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.truechain.Configure;
 import org.truechain.account.Account;
 import org.truechain.account.Account.AccountType;
 import org.truechain.account.AccountTool;
@@ -25,7 +26,6 @@ import org.truechain.network.NetworkParameters;
 import org.truechain.store.StoreProvider;
 import org.truechain.store.TransactionStoreProvider;
 import org.truechain.transaction.RegisterTransaction;
-import org.truechain.transaction.Transaction;
 import org.truechain.utils.Utils;
 
 /**
@@ -51,19 +51,18 @@ public class AccountKit {
 	//节点管理器
 	private PeerKit peerKit;
 	
-	public AccountKit(NetworkParameters network, PeerKit peerKit, String dataDir) throws Exception {
+	public AccountKit(NetworkParameters network, PeerKit peerKit) throws Exception {
 		
-		Utils.checkNotNull(dataDir);
 		this.network = Utils.checkNotNull(network);
 		this.peerKit = Utils.checkNotNull(peerKit);
 		
 		//帐户信息保存于数据目录下的account目录，以account开始的dat文件，一个文件一个帐户，支持多帐户
-		this.accountDir = dataDir + File.separator + "account";
+		this.accountDir = Configure.DATA_ACCOUNT;
 		
 		//初始化交易存储服务，保存与帐户有关的所有交易，保存于数据目录下的transaction文件夹
-		this.transactionStoreProvider = TransactionStoreProvider.getInstace(dataDir+File.separator+"transaction", network);
+		this.transactionStoreProvider = TransactionStoreProvider.getInstace(Configure.DATA_TRANSACTION, network);
 		//初始化状态链存储服务，该目录保存的所有未花费的交易，保存于数据目录下的chainstate文件夹
-		this.chainstateStoreProvider = TransactionStoreProvider.getInstace(dataDir+File.separator+"chainstate", network);
+		this.chainstateStoreProvider = TransactionStoreProvider.getInstace(Configure.DATA_CHAINSTATE, network);
 		
 		init();
 	}
@@ -191,10 +190,10 @@ public class AccountKit {
 		}
 	}
 
-	/*
+	/**
 	 * 生成帐户信息
 	 */
-	private Address genAccountInfos(String mgPw, String trPw) throws FileNotFoundException, IOException {
+	public Address genAccountInfos(String mgPw, String trPw) throws FileNotFoundException, IOException {
 		//生成新的帐户信息
 		//生成私匙公匙对
 		ECKey key = new ECKey();
@@ -262,16 +261,16 @@ public class AccountKit {
 		
 		tx.calculateSignature(ECKey.fromPrivate(AccountTool.genPrivKey1(seedPribs, pwd.getBytes())), 
 				ECKey.fromPrivate(AccountTool.genPrivKey2(seedPribs, pwd.getBytes())));
-		//序列化和反序列化
-		byte[] txContent = tx.baseSerialize();
 		
 		tx.verfifyScript();
 		
-		
-		RegisterTransaction tx1 = new RegisterTransaction(network, txContent);
-		tx1.verfifyScript();
-		
-//		peerKit.broadcastTransaction(tx);
+//		//序列化和反序列化
+//		byte[] txContent = tx.baseSerialize();
+//		
+//		RegisterTransaction tx1 = new RegisterTransaction(network, txContent);
+//		tx1.verfifyScript();
+		log.info("tx id : {}", tx.getHash());
+		peerKit.broadcastTransaction(tx);
 	}
 
 	//加载现有的帐户

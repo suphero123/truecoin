@@ -1,6 +1,7 @@
 package org.truechain.msgprocess;
 
 import org.truechain.message.*;
+import org.truechain.transaction.Transaction;
 
 public class DefaultMessageProcessFactory implements MessageProcessFactory {
 
@@ -23,6 +24,8 @@ public class DefaultMessageProcessFactory implements MessageProcessFactory {
 			return new VerackMessageProcess();
 		} else if(message instanceof VersionMessage) {
 			return new VersionMessageProcess();
+		} else if(message instanceof Transaction) {
+			return new TransactionMessageProcess();
 		} else {
 			return new UnknownMessageProcess();
 		}

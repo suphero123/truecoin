@@ -1,13 +1,13 @@
 package org.truechain.transaction;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.truechain.account.Account;
-import org.truechain.account.AccountTool;
 import org.truechain.account.Account.AccountType;
-import org.truechain.core.VarInt;
+import org.truechain.account.Address;
 import org.truechain.core.exception.ProtocolException;
 import org.truechain.core.exception.VerificationException;
 import org.truechain.crypto.ECKey;
@@ -16,6 +16,7 @@ import org.truechain.crypto.Sha256Hash;
 import org.truechain.network.NetworkParameters;
 import org.truechain.script.Script;
 import org.truechain.script.ScriptBuilder;
+import org.truechain.script.ScriptChunk;
 import org.truechain.utils.Utils;
 
 /**
@@ -32,7 +33,8 @@ public class RegisterTransaction extends Transaction {
 
 	public RegisterTransaction(NetworkParameters network, Account account) {
 		super(network);
-		this.setVersion(VERSION_REGISTER);
+		this.setVersion(VERSION);
+		this.setType(TYPE_REGISTER);
 		this.account = account;
 		this.inputs = new ArrayList<Input>();
 		RegisterInput input = new RegisterInput(account);
@@ -60,6 +62,13 @@ public class RegisterTransaction extends Transaction {
         
 		RegisterOutput output = new RegisterOutput(script);
         output.setParent(this);
+        output.setAccount(account);
+        
+        List<ScriptChunk> chunks = script.getChunks();
+        
+        account.setAddress(Address.fromP2PKHash(network, account.getAccountType().value(), chunks.get(0).data));
+        account.setMgPubkeys(new byte[][] { chunks.get(4).data, chunks.get(5).data});
+        account.setTrPubkeys(new byte[][] { chunks.get(7).data, chunks.get(8).data});
         
         return output;
 	}
@@ -122,7 +131,7 @@ public class RegisterTransaction extends Transaction {
 	 * @param prikey2
 	 */
 	public void calculateSignature(ECKey key1, ECKey key2) {
-		Script script = ScriptBuilder.createEmptyInputScript(Transaction.VERSION_REGISTER, account.getAddress().getHash160());
+		Script script = ScriptBuilder.createEmptyInputScript(Transaction.TYPE_REGISTER, account.getAddress().getHash160());
 		inputs.get(0).setScriptSig(script);
 		
 		Sha256Hash hash = Sha256Hash.of(baseSerialize());
@@ -136,7 +145,7 @@ public class RegisterTransaction extends Transaction {
 		
 		inputs.get(0).setScriptSig(
 				ScriptBuilder.createRegisterInputScript(account.getAddress().getHash160(), 
-						new byte[][] {sign1, sign2}, getVersion()));
+						new byte[][] {sign1, sign2}, getType()));
 	}
 
 	public Account getAccount() {

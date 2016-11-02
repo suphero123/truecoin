@@ -1,19 +1,3 @@
-/*
- * Copyright 2013 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.truechain.net;
 
 import static org.truechain.utils.Utils.checkNotNull;
@@ -31,8 +15,6 @@ import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.slf4j.LoggerFactory;
-
-import com.sun.istack.internal.Nullable;
 
 /**
  * A simple NIO MessageWriteTarget which handles all the business logic of a connection (reading+writing bytes).
@@ -66,7 +48,7 @@ class ConnectionHandler implements MessageWriteTarget {
             throw new IOException("Parser factory.getNewConnection returned null");
     }
 
-    private ConnectionHandler(@Nullable StreamConnection connection, SelectionKey key) {
+    private ConnectionHandler(StreamConnection connection, SelectionKey key) {
         this.key = key;
         this.channel = checkNotNull(((SocketChannel)key.channel()));
         if (connection == null) {

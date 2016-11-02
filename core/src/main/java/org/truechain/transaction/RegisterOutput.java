@@ -37,4 +37,8 @@ public class RegisterOutput extends TransactionOutput {
 		stream.write(new VarInt(sb.length).encode());
 		stream.write(sb);
 	}
+	
+	public void setAccount(Account account) {
+		this.account = account;
+	}
 }

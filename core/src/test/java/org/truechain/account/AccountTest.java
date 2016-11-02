@@ -2,15 +2,22 @@ package org.truechain.account;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.math.BigInteger;
+import java.net.InetSocketAddress;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.truechain.Configure;
 import org.truechain.crypto.ECKey;
 import org.truechain.kits.AccountKit;
 import org.truechain.kits.PeerKit;
+import org.truechain.network.MainNetParams;
 import org.truechain.network.NetworkParameters;
+import org.truechain.network.NodeSeedManager;
+import org.truechain.network.Seed;
+import org.truechain.network.SeedManager;
 import org.truechain.network.TestNetworkParameters;
 import org.truechain.utils.Hex;
 import org.truechain.utils.Utils;
@@ -21,12 +28,6 @@ public class AccountTest {
 
 	@Test
 	public void testAddress() {
-		ECKey key = AccountTool.newPriKey();
-		
-		log.info("pri key is :" + key.getPrivateKeyAsHex());
-		log.info("pub key is :" + key.getPublicKeyAsHex());
-		log.info("pub key not compressed is :" + key.getPublicKeyAsHex(false));
-		
 		NetworkParameters network = TestNetworkParameters.get();
 		
 //		int i = 0;
@@ -57,19 +58,35 @@ public class AccountTest {
 	
 	@Test
 	public void testAccountManager() throws Exception {
-		NetworkParameters network = TestNetworkParameters.get();
-		String dataDir = "./data";
+		SeedManager seedManager = new NodeSeedManager();
+		seedManager.add(new Seed(new InetSocketAddress("127.0.0.1", 6888), true, 25000));
+		
+		NetworkParameters network = new TestNetworkParameters(seedManager, 8888);
+		
+		//测试前先清空帐户目录
+		File dir = new File(Configure.DATA_ACCOUNT);
+		if(dir.listFiles() != null) {
+			for (File file : dir.listFiles()) {
+				file.delete();
+			}
+		}
 		
 		PeerKit peerKit = new PeerKit(network);
-		AccountKit accountKit = new AccountKit(network, peerKit, dataDir);
+		peerKit.startSyn();
+		
+		AccountKit accountKit = new AccountKit(network, peerKit);
 		try {
+			Thread.sleep(2000l);
 			if(accountKit.getAccountList().isEmpty()) {
 				accountKit.createNewAccount("123456", "0123456");
 			}
-			accountKit.createNewAccount("123456", "0123456");
 		} finally {
-			accountKit.close();
-			peerKit.stop();
+//			accountKit.close();
+//			peerKit.stop();
 		}
+	}
+	
+	public static void main(String[] args) throws Exception {
+		new AccountTest().testAccountManager();
 	}
 }

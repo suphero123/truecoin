@@ -1,8 +1,7 @@
 package org.truechain.network;
 
 import org.truechain.message.MessageSerializer;
-
-import com.sun.istack.internal.Nullable;
+import org.truechain.store.Block;
 
 public abstract class NetworkParameters {
 	
@@ -70,7 +69,6 @@ public abstract class NetworkParameters {
         }
     }
 
-	@Nullable
     public static NetworkParameters fromID(String id) {
         if (id.equals(ID_MAINNET)) {
             return MainNetParams.get();
@@ -81,6 +79,12 @@ public abstract class NetworkParameters {
         }
     }
 	
+	/**
+	 * 得到创世块
+	 * @return
+	 */
+	public abstract Block getGengsisBlock();
+
 	public int getPort() {
 		return port;
 	}

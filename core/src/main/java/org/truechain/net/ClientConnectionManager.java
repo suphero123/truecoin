@@ -16,6 +16,7 @@
 
 package org.truechain.net;
 
+import java.io.IOException;
 import java.util.concurrent.Future;
 
 import org.truechain.network.Seed;
@@ -44,5 +45,5 @@ public interface ClientConnectionManager extends Runnable {
     
     void start();
     
-    void stop();
+    void stop() throws IOException;
 }

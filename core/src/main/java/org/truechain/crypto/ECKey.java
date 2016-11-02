@@ -31,8 +31,6 @@ import org.truechain.network.NetworkParameters;
 import org.truechain.utils.Hex;
 import org.truechain.utils.Utils;
 
-import com.sun.istack.internal.Nullable;
-
 /**
  * 椭圆曲线加密
  * @author ln
@@ -85,7 +83,7 @@ public class ECKey {
      * @param priv
      * @param pub
      */
-    private ECKey(@Nullable BigInteger priv, ECPoint pub) {
+    private ECKey(BigInteger priv, ECPoint pub) {
         if (priv != null) {
         	//私匙不应该是0和1
             Utils.checkState(!priv.equals(BigInteger.ZERO));
@@ -351,7 +349,7 @@ public class ECKey {
 		return sign(hash, null);
 	}
 	
-	public ECDSASignature sign(Sha256Hash hash, @Nullable KeyParameter aesKey) throws KeyCrypterException {
+	public ECDSASignature sign(Sha256Hash hash, KeyParameter aesKey) throws KeyCrypterException {
         return doSign(hash, priv);
     }
 	

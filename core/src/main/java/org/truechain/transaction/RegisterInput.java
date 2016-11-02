@@ -5,8 +5,6 @@ import java.io.OutputStream;
 
 import org.truechain.account.Account;
 import org.truechain.core.VarInt;
-import org.truechain.script.Script;
-import org.truechain.script.ScriptBuilder;
 import org.truechain.utils.Utils;
 
 public class RegisterInput extends TransactionInput {
