@@ -64,8 +64,7 @@ public class TransactionStoreProvider extends ChainstateStoreProvider {
 		System.arraycopy(content, 1, transactionContent, 0, content.length - 1);
 		
 		Transaction transaction = new Transaction(network, transactionContent);
-		TransactionStore store = new TransactionStore();
-		store.setTransaction(transaction);
+		TransactionStore store = new TransactionStore(network, transaction);
 		store.setStatus(status);
 		return store;
 	}

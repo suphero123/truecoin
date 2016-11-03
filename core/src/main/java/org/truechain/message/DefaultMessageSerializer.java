@@ -176,6 +176,7 @@ public class DefaultMessageSerializer extends MessageSerializer {
 	public Transaction makeTransaction(byte[] payloadBytes) throws ProtocolException, UnsupportedOperationException {
         return this.makeTransaction(payloadBytes, null);
 	}
+	
 	/**
 	 * 创建交易
 	 */
@@ -185,6 +186,15 @@ public class DefaultMessageSerializer extends MessageSerializer {
         if (hash != null)
             tx.setHash(hash);
         return tx;
+	}
+	
+	/**
+	 * 创建交易
+	 */
+	@Override
+	public Transaction makeTransaction(byte[] payloadBytes, int offset) throws ProtocolException {
+		Transaction tx = new Transaction(network, payloadBytes, offset);
+		return tx;
 	}
 
 }

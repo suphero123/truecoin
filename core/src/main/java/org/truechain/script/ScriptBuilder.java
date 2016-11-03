@@ -33,6 +33,7 @@ import static org.truechain.script.ScriptOpCodes.OP_PUSHDATA1;
 import static org.truechain.script.ScriptOpCodes.OP_PUSHDATA2;
 import static org.truechain.script.ScriptOpCodes.OP_PUSHDATA4;
 import static org.truechain.script.ScriptOpCodes.OP_RETURN;
+import static org.truechain.script.ScriptOpCodes.OP_PUBKEY;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -227,25 +228,25 @@ public class ScriptBuilder {
     }
 
     /** Creates a scriptPubKey that encodes payment to the given address. */
-    public static Script createOutputScript(Address to) {
-        if (to.isP2SHAddress()) {
-            // OP_HASH160 <scriptHash> OP_EQUAL
-            return new ScriptBuilder()
-                .op(OP_HASH160)
-                .data(to.getHash160())
-                .op(OP_EQUAL)
-                .build();
-        } else {
-            // OP_DUP OP_HASH160 <pubKeyHash> OP_EQUALVERIFY OP_CHECKSIG
-            return new ScriptBuilder()
-                .op(OP_DUP)
-                .op(OP_HASH160)
-                .data(to.getHash160())
-                .op(OP_EQUALVERIFY)
-                .op(OP_CHECKSIG)
-                .build();
-        }
-    }
+//    public static Script createOutputScript(Address to) {
+//        if (to.isP2SHAddress()) {
+//            // OP_HASH160 <scriptHash> OP_EQUAL
+//            return new ScriptBuilder()
+//                .op(OP_HASH160)
+//                .data(to.getHash160())
+//                .op(OP_EQUAL)
+//                .build();
+//        } else {
+//            // OP_DUP OP_HASH160 <pubKeyHash> OP_EQUALVERIFY OP_CHECKSIG
+//            return new ScriptBuilder()
+//                .op(OP_DUP)
+//                .op(OP_HASH160)
+//                .data(to.getHash160())
+//                .op(OP_EQUALVERIFY)
+//                .op(OP_CHECKSIG)
+//                .build();
+//        }
+//    }
 
     /** Creates a scriptPubKey that encodes payment to the given raw public key. */
     public static Script createOutputScript(ECKey key) {
@@ -539,4 +540,32 @@ public class ScriptBuilder {
         
         return builder.build();
 	}
+	
+	/**
+     * 创建一个空签名
+     * @param type
+     * @param hash160
+     * @return
+     */
+	public static Script createCoinbaseInputScript(byte[] data) {
+		ScriptBuilder builder = new ScriptBuilder();
+
+        builder.data(data);
+        
+        return builder.build();
+	}
+	
+	/**
+	 * 普通交易的输出
+	 * @param to
+	 * @return
+	 */
+	public static Script createOutputScript(Address to) {
+            return new ScriptBuilder()
+        		.data(to.getHash160())
+                .op(OP_DUP)
+                .op(OP_PUBKEY)
+                .op(OP_CHECKSIG)
+                .build();
+    }
 }

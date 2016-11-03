@@ -34,6 +34,7 @@ public class Transaction extends Message {
 	
 	public static final long VERSION = 1;
 	
+	public static final int TYPE_COINBASE = 9;	//coinbase交易
 	public static final int TYPE_REGISTER = 1;	//帐户注册
 	public static final int TYPE_CHANGEPWD = 2;	//修改密码
 	public static final int TYPE_PAY = 6;		//普通支付交易
@@ -47,7 +48,7 @@ public class Transaction extends Message {
 	//交易输入
     protected List<Input> inputs;
 	//交易输出
-    protected List<TransactionOutput> outputs;
+    protected List<Output> outputs;
 	
 	//tx hash
 	protected Sha256Hash hash;
@@ -87,23 +88,28 @@ public class Transaction extends Message {
 	public Transaction(NetworkParameters network) {
 		super(network);
 		inputs = new ArrayList<Input>();
-        outputs = new ArrayList<TransactionOutput>();
+        outputs = new ArrayList<Output>();
 	}
-	
+
 	public Transaction(NetworkParameters params, byte[] payloadBytes) throws ProtocolException {
         super(params, payloadBytes, 0);
+    }
+
+	public Transaction(NetworkParameters params, byte[] payloadBytes, int offset) throws ProtocolException {
+        super(params, payloadBytes, offset);
     }
 
 	/**
 	 * 序列化
 	 */
 	protected void serializeToStream(OutputStream stream) throws IOException {
+		stream.write(type);
 		Utils.uint32ToByteStreamLE(version, stream);
         stream.write(new VarInt(inputs.size()).encode());
         for (Input in : inputs)
             in.serialize(stream);
         stream.write(new VarInt(outputs.size()).encode());
-        for (TransactionOutput out : outputs)
+        for (Output out : outputs)
             out.serialize(stream);
         Utils.uint32ToByteStreamLE(lockTime, stream);
     }
@@ -115,8 +121,9 @@ public class Transaction extends Message {
 	protected void parse() throws ProtocolException {
 		cursor = offset;
 		
-		version = (int) readUint32();
-
+		type = readBytes(1)[0];
+		version = readUint32();
+		
 		//交易输入数量
         long numInputs = readVarInt();
         inputs = new ArrayList<Input>((int) numInputs);
@@ -127,7 +134,7 @@ public class Transaction extends Message {
 
 		//交易输出数量
         long numOutputs = readVarInt();
-        outputs = new ArrayList<TransactionOutput>((int) numOutputs);
+        outputs = new ArrayList<Output>((int) numOutputs);
         for (int i = 0; i < numOutputs; i++) {
         	TransactionOutput output = parseOutput();
         	output.setIndex(i);
@@ -160,15 +167,26 @@ public class Transaction extends Message {
 		TransactionInput input = new TransactionInput();
         input.setParent(this);
         
-        //上笔交易的引用
+        if(getType() == Transaction.TYPE_COINBASE) {
+        	int signLength = (int) readVarInt();
+        	byte[] msg = readBytes(signLength);
+        	//TODO
+        	byte[] signMsg = new byte[msg.length -1];
+        	System.arraycopy(msg, 1, signMsg, 0, signMsg.length);
+        	
+        	input.setScriptSig(ScriptBuilder.createCoinbaseInputScript(signMsg));
+            input.setSequence(readUint32());
+        	return input;
+        }
+        
+    	//上笔交易的引用
         TransactionOutput pre = new TransactionOutput();
         Transaction t = new Transaction(network);
         pre.setParent(t);
         pre.getParent().setHash(Sha256Hash.wrap(readBytes(32)));
         pre.setIndex((int)readUint32());
-        
         input.setFrom(pre);
-        
+    
         //输入签名的长度
         int signLength = (int)readVarInt();
         input.setScriptBytes(readBytes(signLength));
@@ -191,7 +209,6 @@ public class Transaction extends Message {
 	 * 验证交易的合法性
 	 */
 	public void verfify() throws VerificationException {
-		//TODO  运行脚本，验证交易的合法性
 		
 		
 	}
@@ -200,7 +217,16 @@ public class Transaction extends Message {
 	 * 验证交易脚本
 	 */
 	public void verfifyScript() {
+
+		Utils.checkState(inputs.size() > 0);
+		Utils.checkState(outputs.size() > 0);
 		
+		Input input = inputs.get(0);
+		Output output = outputs.get(0);
+		
+		//如果是coinbase交易，就不检查脚本
+		if(type != TYPE_COINBASE)
+			input.getScriptSig().run(this, output.getScript());
 	}
 
 	public Sha256Hash hashForSignature(int index, byte[] redeemScript, byte sigHashType) {
@@ -321,7 +347,7 @@ public class Transaction extends Message {
         return inputs.get(index);
     }
 
-    public TransactionOutput getOutput(int index) {
+    public Output getOutput(int index) {
         return outputs.get(index);
     }
     
@@ -329,7 +355,7 @@ public class Transaction extends Message {
 		return inputs;
 	}
     
-    public List<TransactionOutput> getOutputs() {
+    public List<Output> getOutputs() {
 		return outputs;
 	}
 

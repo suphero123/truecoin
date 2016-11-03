@@ -1,7 +1,7 @@
 package org.truechain.network;
 
 import org.truechain.message.MessageSerializer;
-import org.truechain.store.Block;
+import org.truechain.store.BlockStore;
 
 public abstract class NetworkParameters {
 	
@@ -83,7 +83,7 @@ public abstract class NetworkParameters {
 	 * 得到创世块
 	 * @return
 	 */
-	public abstract Block getGengsisBlock();
+	public abstract BlockStore getGengsisBlock();
 
 	public int getPort() {
 		return port;

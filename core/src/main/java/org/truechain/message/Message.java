@@ -270,4 +270,8 @@ public abstract class Message {
 	public NetworkParameters getNetwork() {
 		return network;
 	}
+
+	public int getLength() {
+		return length;
+	}
 }

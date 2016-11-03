@@ -17,6 +17,7 @@ import org.truechain.network.NetworkParameters;
 import org.truechain.script.Script;
 import org.truechain.script.ScriptBuilder;
 import org.truechain.script.ScriptChunk;
+import org.truechain.utils.Hex;
 import org.truechain.utils.Utils;
 
 /**
@@ -40,13 +41,14 @@ public class RegisterTransaction extends Transaction {
 		RegisterInput input = new RegisterInput(account);
 		this.inputs.add(input);
 		
-		this.outputs = new ArrayList<TransactionOutput>();
+		this.outputs = new ArrayList<Output>();
 		RegisterOutput output = new RegisterOutput(account);
 		this.outputs.add(output);
 	}
 	
 	public RegisterTransaction(NetworkParameters params, byte[] payloadBytes) throws ProtocolException {
         super(params, payloadBytes);
+		this.setType(TYPE_REGISTER);
     }
 	
 	/**
@@ -112,19 +114,6 @@ public class RegisterTransaction extends Transaction {
 		
 	}
 	
-	/**
-	 * 验证脚本
-	 */
-	public void verfifyScript() throws VerificationException {
-		Utils.checkState(inputs.size() > 0);
-		Utils.checkState(outputs.size() > 0);
-		
-		RegisterInput input = (RegisterInput) inputs.get(0);
-		RegisterOutput output = (RegisterOutput) outputs.get(0);
-		
-		input.getScriptSig().run(this, output.getScript());
-	}
-
 	/**
 	 * 更新交易签名
 	 * @param prikey1

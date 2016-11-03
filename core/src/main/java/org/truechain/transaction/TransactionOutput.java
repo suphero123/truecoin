@@ -18,7 +18,7 @@ import org.truechain.utils.Utils;
  * @author ln
  *
  */
-public class TransactionOutput {
+public class TransactionOutput implements Output {
 
 	private Transaction parent;
 	//下次的花费

@@ -54,8 +54,7 @@ public class ChainstateStoreProvider extends BaseStoreProvider {
 			throw new NullPointerException("transaction content is null");
 		}
 		Transaction transaction = new Transaction(network, content);
-		TransactionStore store = new TransactionStore();
-		store.setTransaction(transaction);
+		TransactionStore store = new TransactionStore(network, transaction);
 		return store;
 	}
 }

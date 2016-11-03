@@ -1670,7 +1670,7 @@ public class Script {
     /**
      * 运行脚本
      */
-    public void run(RegisterTransaction tx, Script out) throws VerificationException {
+    public void run(Transaction tx, Script out) throws VerificationException {
     	//TODO
     	
     	LinkedList<byte[]> stack = new LinkedList<byte[]>();
@@ -1688,7 +1688,7 @@ public class Script {
             throw new ScriptException("Script resulted in a non-true stack: " + stack);
     }
     
-    public static void executeScript(RegisterTransaction tx, Script script, LinkedList<byte[]> stack) {
+    public static void executeScript(Transaction tx, Script script, LinkedList<byte[]> stack) {
     	//操作码数量，最多允许501个
     	int opCount = 0;	
     	
@@ -1878,7 +1878,7 @@ public class Script {
     /*
      * 验证交易签名
      */
-	private static void executeCheckSig(RegisterTransaction tx, LinkedList<byte[]> stack, int opcode) {
+	private static void executeCheckSig(Transaction tx, LinkedList<byte[]> stack, int opcode) {
 		
 		//复制一个tx，否则会导致里面的数据被修改
 		tx = new RegisterTransaction(tx.getNetwork(), tx.baseSerialize());
@@ -1891,8 +1891,12 @@ public class Script {
 		byte[] sign2 = stack.pollLast();
 		byte[] sign1 = stack.pollLast();
 		
-		tx.getInput(0).setScriptSig(ScriptBuilder.createEmptyInputScript(
-				tx.getType(), tx.getAccount().getAddress().getHash160()));
+		if(tx instanceof RegisterTransaction) {
+			RegisterTransaction regTx = (RegisterTransaction) tx;
+			tx.getInput(0).setScriptSig(ScriptBuilder.createEmptyInputScript(
+					tx.getType(), regTx.getAccount().getAddress().getHash160()));
+		}
+		
 		byte[] hash = Sha256Hash.of(tx.baseSerialize()).getBytes();
 		
 		if(!ECKey.fromPublicOnly(mgPubkey1).verify(hash, sign1) || !ECKey.fromPublicOnly(mgPubkey2).verify(hash, sign2)) {

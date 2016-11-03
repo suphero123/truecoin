@@ -129,4 +129,14 @@ public abstract class MessageSerializer {
      */
     public abstract Transaction makeTransaction(byte[] payloadBytes, 
     		Sha256Hash hash) throws ProtocolException, UnsupportedOperationException;
+    
+    /**
+     * 解析交易
+     * @param payloadBytes
+     * @param offset
+     * @return
+     * @throws ProtocolException
+     */
+    public abstract Transaction makeTransaction(byte[] payloadBytes, int offset) throws ProtocolException;
+    
 }

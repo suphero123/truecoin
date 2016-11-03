@@ -7,7 +7,7 @@ import org.truechain.crypto.Sha256Hash;
 import org.truechain.mempool.MempoolContainer;
 import org.truechain.mempool.MempoolContainerMap;
 import org.truechain.network.NetworkParameters;
-import org.truechain.store.Block;
+import org.truechain.store.BlockStore;
 import org.truechain.store.BlockStoreProvider;
 import org.truechain.transaction.Transaction;
 
@@ -43,7 +43,7 @@ public final class LocalMining implements Mining {
 		//如果区块高度不是最新的，那么同步至最新的再开始
 		//TODO
 		
-		Block bestBlock = blockStoreProvider.getBestBlock();
+		BlockStore bestBlock = blockStoreProvider.getBestBlock();
 		
 		//每次最多处理1000个交易
 		Transaction[] txs = mempool.getNewest(1000);

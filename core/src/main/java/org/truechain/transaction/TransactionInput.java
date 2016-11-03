@@ -41,9 +41,11 @@ public class TransactionInput implements Input {
 	 */
 	public void serialize(OutputStream stream) throws IOException {
 		//上一交易的引用
-		Utils.checkNotNull(from);
-		stream.write(from.getParent().getHash().getBytes());
-		Utils.uint32ToByteStreamLE(from.getIndex(), stream);
+		if(parent.getType() != Transaction.TYPE_COINBASE) {
+			Utils.checkNotNull(from);
+			stream.write(from.getParent().getHash().getBytes());
+			Utils.uint32ToByteStreamLE(from.getIndex(), stream);
+		}
 		//签名的长度
         stream.write(new VarInt(scriptBytes.length).encode());
         //签名
@@ -99,8 +101,4 @@ public class TransactionInput implements Input {
 		this.scriptBytes = scriptSig.getProgram();
 	}
 
-	public void setType(int i) {
-		// TODO Auto-generated method stub
-		
-	}
 }
