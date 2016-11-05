@@ -1,9 +1,13 @@
 package org.truechain.network;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.truechain.message.MessageSerializer;
 import org.truechain.store.BlockStore;
 
 public abstract class NetworkParameters {
+	
+	protected Logger log = LoggerFactory.getLogger(getClass());
 	
     public static final String ID_MAINNET = "org.ricechain.production";
     public static final String ID_TESTNET = "org.ricechain.test";

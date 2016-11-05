@@ -32,6 +32,7 @@ public class DefaultMessageSerializer extends MessageSerializer {
     	COMMANDS.put(VersionMessage.class, "version");
     	COMMANDS.put(VerackMessage.class, "verack");
     	COMMANDS.put(RegisterTransaction.class, "accreg");
+    	COMMANDS.put(BlockMessage.class, "block");
     }
 
 	public DefaultMessageSerializer(NetworkParameters network) {
@@ -135,6 +136,8 @@ public class DefaultMessageSerializer extends MessageSerializer {
         	message = new PongMessage(network, payloadBytes);
         } else if (command.equals("accreg")) {
         	message = new RegisterTransaction(network, payloadBytes);
+        } else if (command.equals("block")) {
+        	message = new BlockMessage(network, payloadBytes);
         } else {
         	log.warn("No support for deserializing message with name {}", command);
         	message = new UnknownMessage(network, command, payloadBytes);
@@ -193,7 +196,16 @@ public class DefaultMessageSerializer extends MessageSerializer {
 	 */
 	@Override
 	public Transaction makeTransaction(byte[] payloadBytes, int offset) throws ProtocolException {
-		Transaction tx = new Transaction(network, payloadBytes, offset);
+		//根据交易类型来创建交易
+		byte type = payloadBytes[offset];
+		
+		Transaction tx = null;
+		if(type == Transaction.TYPE_REGISTER) {
+			//帐户注册交易
+			tx = new RegisterTransaction(network, payloadBytes, offset);
+		} else {
+			tx = new Transaction(network, payloadBytes, offset);
+		}
 		return tx;
 	}
 

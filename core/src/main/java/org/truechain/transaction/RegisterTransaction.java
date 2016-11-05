@@ -17,7 +17,6 @@ import org.truechain.network.NetworkParameters;
 import org.truechain.script.Script;
 import org.truechain.script.ScriptBuilder;
 import org.truechain.script.ScriptChunk;
-import org.truechain.utils.Hex;
 import org.truechain.utils.Utils;
 
 /**
@@ -47,9 +46,13 @@ public class RegisterTransaction extends Transaction {
 	}
 	
 	public RegisterTransaction(NetworkParameters params, byte[] payloadBytes) throws ProtocolException {
-        super(params, payloadBytes);
-		this.setType(TYPE_REGISTER);
+		this(params, payloadBytes, 0);
     }
+	
+	public RegisterTransaction(NetworkParameters params, byte[] payloadBytes, int offset) throws ProtocolException {
+		super(params, payloadBytes, offset);
+		this.setType(TYPE_REGISTER);
+	}
 	
 	/**
 	 * 反序列化交易的输出部分

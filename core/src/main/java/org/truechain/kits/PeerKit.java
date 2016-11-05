@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.truechain.core.Peer;
 import org.truechain.core.TransactionBroadcast;
 import org.truechain.core.TransactionBroadcaster;
+import org.truechain.message.BlockMessage;
 import org.truechain.net.ClientConnectionManager;
 import org.truechain.net.ConnectionListener;
 import org.truechain.net.NewInConnectionListener;
@@ -157,6 +158,24 @@ public class PeerKit implements TransactionBroadcaster {
 			} catch (Exception e) {
 				log.error("error init peer", e);
 			}
+		}
+	}
+
+	/**
+	 * 广播区块
+	 * @param block
+	 */
+	public void broadcastBlock(BlockMessage block) {
+		//TODO
+		if(inPeers.size() > 0 || outPeers.size() > 0) {
+			for (Peer peer : inPeers) {
+				peer.sendMessage(block);
+			}
+			for (Peer peer : outPeers) {
+				peer.sendMessage(block);
+			}
+		} else {
+			log.warn("广播新区块失败，没有可广播的节点");
 		}
 	}
 	

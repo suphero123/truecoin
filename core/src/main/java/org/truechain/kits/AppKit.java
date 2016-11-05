@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.truechain.Configure;
+import org.truechain.consensus.LocalMining;
 import org.truechain.core.exception.VerificationException;
 import org.truechain.network.NetworkParameters;
 import org.truechain.store.BlockHeaderStore;
@@ -22,7 +23,12 @@ public class AppKit {
 	
 	private final BlockStoreProvider blockStoreProvider;
 	private final NetworkParameters network;
-	
+	//挖矿程序
+	private LocalMining mining;
+	//结点管理
+	private PeerKit peerKit;
+	//帐户管理 
+	private AccountKit accountKit;
 	
 	public AppKit(NetworkParameters network) {
 		this.network = network;
@@ -36,8 +42,8 @@ public class AppKit {
 				try {
 					AppKit.this.start();
 				} catch (IOException e) {
-					log.error("", e);
-					//TODO
+					log.error("核心程序启动失败", e);
+					System.exit(-1);
 				}
 			}
 		}.start();
@@ -48,7 +54,43 @@ public class AppKit {
 	 * @throws IOException 
 	 */
 	protected void start() throws IOException {
+		//初始化节点管理器
+		initPeerKit();
+		//检查区块数据
 		initBlock();
+		//初始化帐户信息
+		initAccountKit();
+		//初始化挖矿
+		initMining();
+	}
+	
+	//初始化节点管理器
+	private void initPeerKit() {
+		peerKit = new PeerKit(network, Configure.MAX_CONNECT_COUNT);
+		peerKit.startSyn();
+	}
+
+	//初始化帐户信息
+	private void initAccountKit() throws IOException {
+		accountKit = new AccountKit(network, peerKit);
+	}
+
+	//初始化挖矿
+	private void initMining() {
+		mining = new LocalMining(network, accountKit, peerKit);
+		mining.start();
+	}
+
+	/**
+	 * 停止服务
+	 * @throws IOException 
+	 */
+	public void stop() throws IOException {
+		peerKit.stop();
+		mining.stop();
+		
+		blockStoreProvider.close();
+		accountKit.close();
 	}
 
 	/*

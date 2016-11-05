@@ -23,6 +23,22 @@ public final class Configure {
 	private static final String CONFIG_FILE = "config.conf";
 	
 	/**
+	 * 最大允许节点连接数
+	 */
+	@Property(key="max.connect.count", defaultValue="10")
+	public static int MAX_CONNECT_COUNT;
+	
+	/**
+	 * 区块生成间隔时间
+	 */
+	@Property(key="block.gen.time", defaultValue="10")
+	public static int BLOCK_GEN_TIME;
+	/**
+	 * 挖矿奖励冻结区块数
+	 */
+	@Property(key="mining.mature.count", defaultValue="10")
+	public static int MINING_MATURE_COUNT;
+	/**
 	 * 数据存储目录
 	 */
 	@Property(key="data.dir",defaultValue="./data")

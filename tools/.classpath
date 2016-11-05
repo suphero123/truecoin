@@ -14,10 +14,9 @@
 	<classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/core/jackson-databind/2.5.2/jackson-databind-2.5.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/core/jackson-annotations/2.5.0/jackson-annotations-2.5.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/core/jackson-core/2.5.1/jackson-core-2.5.1.jar" sourcepath="M2_REPO/com/fasterxml/jackson/core/jackson-core/2.5.1/jackson-core-2.5.1-sources.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/madgag/spongycastle/core/1.51.0.0/core-1.51.0.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/iq80/leveldb/leveldb/0.9/leveldb-0.9.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/iq80/leveldb/leveldb-api/0.9/leveldb-api-0.9.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/google/guava/guava/18.0/guava-18.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/truechain/core/0.1/core-0.1.jar" sourcepath="/M2_REPO"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/core"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

@@ -53,6 +53,9 @@ public class BlockStore extends BlockHeaderStore {
 	 */
 	@Override
 	public void serializeToStream(OutputStream stream) throws IOException {
+		if(txHashs != null) {
+			txHashs = null;
+		}
 		super.serializeToStream(stream);
 		//交易数量
 		for (int i = 0; i < txCount; i++) {
@@ -133,5 +136,11 @@ public class BlockStore extends BlockHeaderStore {
 	}
 	public void setTxs(List<TransactionStore> txs) {
 		this.txs = txs;
+	}
+
+	@Override
+	public String toString() {
+		return "BlockStore [version=" + version + ", hash=" + getHash() + ", preHash=" + preHash + ", merkleHash="
+				+ merkleHash + ", time=" + time + ", height=" + height + ", txCount=" + txCount + "]";
 	}
 }

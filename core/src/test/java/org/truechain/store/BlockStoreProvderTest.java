@@ -3,10 +3,12 @@ package org.truechain.store;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iq80.leveldb.util.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,9 +29,17 @@ public class BlockStoreProvderTest {
 	private BlockStoreProvider storeProvider;
 	
 	@Before
-	public void init() {
+	public void init() throws IOException {
 		network = TestNetworkParameters.get();
+		
+		//清空目录
+		FileUtils.deleteDirectoryContents(new File(Configure.DATA_BLOCK));
+		
 		storeProvider = new BlockStoreProvider(Configure.DATA_BLOCK, network);
+		
+		//保存创始块
+		storeProvider.saveBlock(network.getGengsisBlock());
+		testSave();
 	}
 	
 	@After
@@ -43,11 +53,11 @@ public class BlockStoreProvderTest {
 		assertNotNull(storeProvider);
 	}
 	
-	@Test
 	public void testSave() throws IOException {
+		
 		BlockStore testBlock = new BlockStore(network);
 		
-		testBlock.setPreHash(Sha256Hash.wrap(Hex.decode("3728b98205462ba133d5bc0128c2d6f45c95136011994d2165ec24961e8d912a")));
+		testBlock.setPreHash(Sha256Hash.wrap(Hex.decode("59a03c5f24966e6b438e7f1d699d240fa74329f58ad10f992780b796e9e39b73")));
 		testBlock.setHeight(1);
 		testBlock.setTime(1478164677l);
 
@@ -83,14 +93,14 @@ public class BlockStoreProvderTest {
 	}
 	
 	@Test
-	public void testZGetBlockHeader() {
-		Sha256Hash hash = Sha256Hash.wrap(Hex.decode("2813ae608bd070b01b2f711b8eb4ef2cf226b91b5b9df1f888e6af7d8060d1e7"));
+	public void testGetBlockHeader() {
+		Sha256Hash hash = Sha256Hash.wrap(Hex.decode("200babcc53e27f835774e221e68677481569f3732263f81bb454ac0edb8083cb"));
 		BlockHeaderStore header = storeProvider.getHeader(hash.getBytes());
 		assertNotNull(header);
 		
 		assertEquals("e20dacb0a8e2ac580120cf4db083533e6f9c2871b990ce07fa8ad84837850385", Hex.encode(header.getMerkleHash().getBytes()));
 		
-		assertEquals("3728b98205462ba133d5bc0128c2d6f45c95136011994d2165ec24961e8d912a", Hex.encode(header.getPreHash().getBytes()));
+		assertEquals("59a03c5f24966e6b438e7f1d699d240fa74329f58ad10f992780b796e9e39b73", Hex.encode(header.getPreHash().getBytes()));
 		
 		List<Sha256Hash> txHashs = header.getTxHashs();
 		
@@ -102,7 +112,7 @@ public class BlockStoreProvderTest {
 	}
 	
 	@Test
-	public void testZGetBlockHeaderByTx() {
+	public void testGetBlockHeaderByTx() {
 		TransactionStore tx = storeProvider.getTransaction(Hex.decode("e20dacb0a8e2ac580120cf4db083533e6f9c2871b990ce07fa8ad84837850385"));
 		assertNotNull(tx);
 		assertEquals("e20dacb0a8e2ac580120cf4db083533e6f9c2871b990ce07fa8ad84837850385", Hex.encode(tx.getKey()));
@@ -113,10 +123,28 @@ public class BlockStoreProvderTest {
 	}
 	
 	@Test
-	public void testZGetBlock() {
+	public void testGetBlock() {
 
-		BlockStore blockStore = storeProvider.getBlock(Hex.decode("2813ae608bd070b01b2f711b8eb4ef2cf226b91b5b9df1f888e6af7d8060d1e7"));
+		BlockStore blockStore = storeProvider.getBlock(Hex.decode("200babcc53e27f835774e221e68677481569f3732263f81bb454ac0edb8083cb"));
 		
+		assertNotNull(blockStore);
+	}
+	
+	@Test
+	public void testGetBlockByHeight() {
+
+		BlockStore blockStore = storeProvider.getBlockByHeight(1l);
+		
+		assertEquals("200babcc53e27f835774e221e68677481569f3732263f81bb454ac0edb8083cb", Hex.encode(blockStore.getHash().getBytes()));
+		assertNotNull(blockStore);
+	}
+	
+	@Test
+	public void testGetBestBlock() {
+
+		BlockStore blockStore = storeProvider.getBestBlock();
+		
+		assertEquals("200babcc53e27f835774e221e68677481569f3732263f81bb454ac0edb8083cb", Hex.encode(blockStore.getHash().getBytes()));
 		assertNotNull(blockStore);
 	}
 }

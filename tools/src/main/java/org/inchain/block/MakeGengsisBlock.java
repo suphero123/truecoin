@@ -20,6 +20,7 @@ import org.truechain.network.TestNetworkParameters;
 import org.truechain.script.ScriptBuilder;
 import org.truechain.store.BlockHeaderStore;
 import org.truechain.store.BlockStore;
+import org.truechain.store.TransactionStore;
 import org.truechain.transaction.RegisterTransaction;
 import org.truechain.transaction.Transaction;
 import org.truechain.transaction.TransactionInput;
@@ -94,7 +95,7 @@ public class MakeGengsisBlock {
 		gengsisBlock.setTxCount(1);
 
 		//交易列表
-		List<Transaction> txs = new ArrayList<Transaction>();
+		List<TransactionStore> txs = new ArrayList<TransactionStore>();
 		
 		//产出货币总量
 		Transaction coinBaseTx = new Transaction(network);
@@ -109,23 +110,23 @@ public class MakeGengsisBlock {
 		coinBaseTx.verfify();
 		coinBaseTx.verfifyScript();
 		
-		txs.add(coinBaseTx);
+		txs.add(new TransactionStore(network, coinBaseTx));
 		
 		//注册创世帐户
-		RegisterTransaction regTx = new RegisterTransaction(network, Hex.decode("01000000010100a546304402206b016c3e4bcd0fcee8fd3be6dba9784605898d2adc02126fecf3c4a62354971602201e05648e97dcf624c29e6cbccc561d9445b26d6a3a69c7ed281cb73a10be91e7473045022100b918ec394cd37cbab228979867202f157e99f8ce762a086a7ebc8662eecd9a8e022058978dbb0e67b7f8004ae6c8295287066db0b1727d37f344410d60bf19cd1a50511424de55a2b2d32ed83c87b86a381e918ada34927b01a31424de55a2b2d32ed83c87b86a381e918ada34927b88c163210327260fbbb392bc13d9e8f2aabdf85d8c328eeec2114e37eb6d519fd1a0435cec2103cf8ca50b7711fb12a2a091ca5da5dd7493b77e342c205ebb0970469a400cd7e26721024148d14d898644570b4c44047d6687c1862cdbd0f813caf15a170550ad8c9d0621039844c6aa78fee792ce6ff793758b3c0d3c4217c6145f7c37844b5479b933d4e368ac00000000"));
+		RegisterTransaction regTx = new RegisterTransaction(network, Hex.decode("0101000000010100a546304402207016a9642ba5bc3a13b5f7762e92936a50eb07fe1d8fe9193b714d07ab3f4c260220782d4ad2d83f983fd4f658add79d1bdab1329541514aff4275b601a286735a76473045022100afdae4c478ba213a0a9ae064d3dc687e13f4f7e559b3cd325c36861ef36a4cf80220055bf81e9db9a3d5d04453390a2b0471f8c7093e0842996610b101c20e120c99511424de55a2b2d32ed83c87b86a381e918ada34927b01a31424de55a2b2d32ed83c87b86a381e918ada34927b88c163210327260fbbb392bc13d9e8f2aabdf85d8c328eeec2114e37eb6d519fd1a0435cec2103cf8ca50b7711fb12a2a091ca5da5dd7493b77e342c205ebb0970469a400cd7e26721024148d14d898644570b4c44047d6687c1862cdbd0f813caf15a170550ad8c9d0621039844c6aa78fee792ce6ff793758b3c0d3c4217c6145f7c37844b5479b933d4e368ac00000000"));
 		regTx.verfify();
 		regTx.verfifyScript();
 		
-		txs.add(regTx);
+		txs.add(new TransactionStore(network, regTx));
 		
-//		gengsisBlock.setTxs(txs);
+		gengsisBlock.setTxs(txs);
 		
 		Sha256Hash merkleHash = gengsisBlock.getMerkleHash();
 		System.out.println(merkleHash);
-		Utils.checkState("e16cd594314bdec068d1641b275039876015e03dca939551a379f329a2715172".equals(Hex.encode(merkleHash.getBytes())), "the gengsis block merkle hash is error");
+		Utils.checkState("c29b8e98c531ddf9211bbf1954885ceaf998d14c21e29edda8250fbacb2bf9f1".equals(Hex.encode(merkleHash.getBytes())), "the gengsis block merkle hash is error");
 		
 		System.out.println(Hex.encode(gengsisBlock.getHash().getBytes()));
-		Utils.checkState("bce54000b2414a740482188830dca4f1beb3fc0a5007d5cbd6ae25c7b262d3e5".equals(Hex.encode(gengsisBlock.getHash().getBytes())), "the gengsis block hash is error");
+		Utils.checkState("897f3ee043572d069a0056f9ee9c3cdaa884691c1084a675fbbffa00e09c81fa".equals(Hex.encode(gengsisBlock.getHash().getBytes())), "the gengsis block hash is error");
 		
 		System.out.println(Hex.encode(gengsisBlock.baseSerialize()));
 		

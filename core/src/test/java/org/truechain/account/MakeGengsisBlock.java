@@ -77,6 +77,7 @@ public class MakeGengsisBlock {
 		
 		rtx.verfify();
 		rtx.verfifyScript();
+		System.out.println(Hex.encode(rtx.baseSerialize()));
 		
 		
 		
@@ -106,7 +107,7 @@ public class MakeGengsisBlock {
 		txs.add(new TransactionStore(network, coinBaseTx));
 		
 		//注册创世帐户
-		RegisterTransaction regTx = new RegisterTransaction(network, Hex.decode("01000000010100a546304402206b016c3e4bcd0fcee8fd3be6dba9784605898d2adc02126fecf3c4a62354971602201e05648e97dcf624c29e6cbccc561d9445b26d6a3a69c7ed281cb73a10be91e7473045022100b918ec394cd37cbab228979867202f157e99f8ce762a086a7ebc8662eecd9a8e022058978dbb0e67b7f8004ae6c8295287066db0b1727d37f344410d60bf19cd1a50511424de55a2b2d32ed83c87b86a381e918ada34927b01a31424de55a2b2d32ed83c87b86a381e918ada34927b88c163210327260fbbb392bc13d9e8f2aabdf85d8c328eeec2114e37eb6d519fd1a0435cec2103cf8ca50b7711fb12a2a091ca5da5dd7493b77e342c205ebb0970469a400cd7e26721024148d14d898644570b4c44047d6687c1862cdbd0f813caf15a170550ad8c9d0621039844c6aa78fee792ce6ff793758b3c0d3c4217c6145f7c37844b5479b933d4e368ac00000000"));
+		RegisterTransaction regTx = new RegisterTransaction(network, Hex.decode("0101000000010100a547304502210082bb8fdd903133c032a00c843254c387571ec9af6372183ecf9bffc227f89cdd02207f64221d24c866ee418fc838d96543241fe676ac65bd99a16f0af6d72e2719004630440220156d0ff9e76f8834b98899881b614720bd66e9be3404fffe9364299930c48c460220118f83f1ed6f9461087a6daa991c1e4cebd572e1d5ae6e6d9ded223ffa71019051145a29d0959ae0445f837f3534304cde744a87a9e801a3145a29d0959ae0445f837f3534304cde744a87a9e888c16321035a734e4998d176a4c0b94016333e70a61a8c470ae3f854e718da34c95d960bb42102334ec39ecc5454f6899444d78f20025e68d6a0c2356c1cee84c23feb9bd658d86721021b32e71d92968bcb4c63b5adece8e1181d1a7f60c8649d35ecb9e6fc8aeeff6021029e9a848cc3c3bd112b45770d77db058a9c4d17c5fdb353d046c682b3d07f223168ac00000000"));
 		regTx.verfify();
 		regTx.verfifyScript();
 		
@@ -116,10 +117,10 @@ public class MakeGengsisBlock {
 		
 		Sha256Hash merkleHash = gengsisBlock.getMerkleHash();
 		System.out.println(merkleHash);
-		Utils.checkState("e16cd594314bdec068d1641b275039876015e03dca939551a379f329a2715172".equals(Hex.encode(merkleHash.getBytes())), "the gengsis block merkle hash is error");
+		Utils.checkState("86c346bda7710779081dd0a89205ad72240c20da44578362d62076a683e94533".equals(Hex.encode(merkleHash.getBytes())), "the gengsis block merkle hash is error");
 		
 		System.out.println(Hex.encode(gengsisBlock.getHash().getBytes()));
-		Utils.checkState("44b58a203c87000c3b3f1957d5365598a30a146f930b2447494dbd00639e0040".equals(Hex.encode(gengsisBlock.getHash().getBytes())), "the gengsis block hash is error");
+		Utils.checkState("4a608dbba13de948ecf1f912eb7721413b2edfe28cb13d50ce47af4b03654bb1".equals(Hex.encode(gengsisBlock.getHash().getBytes())), "the gengsis block hash is error");
 		
 		System.out.println(Hex.encode(gengsisBlock.baseSerialize()));
 		

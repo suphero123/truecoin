@@ -9,6 +9,7 @@ import org.truechain.mempool.MempoolContainerMap;
 import org.truechain.message.Message;
 import org.truechain.transaction.RegisterTransaction;
 import org.truechain.transaction.Transaction;
+import org.truechain.utils.Hex;
 
 /**
  * 交易消息
@@ -27,7 +28,7 @@ public class TransactionMessageProcess implements MessageProcess {
 		Transaction tx = (Transaction) message;
 		
 		if(log.isDebugEnabled()) {
-			log.debug("transaction message {}", message);
+			log.debug("transaction message {}", Hex.encode(tx.baseSerialize()));
 		}
 		//验证交易的合法性
 		tx.verfify();
@@ -45,19 +46,6 @@ public class TransactionMessageProcess implements MessageProcess {
 		//加入内存池
 		mempool.add(id, tx);
 		
-		if(message instanceof RegisterTransaction) {
-			processRegister((RegisterTransaction)message);
-		}
-		
 		return new MessageProcessResult();
-	}
-
-	/*
-	 * 帐户注册交易
-	 */
-	private void processRegister(RegisterTransaction tx) {
-		
-		
-		
 	}
 }

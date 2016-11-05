@@ -1,0 +1,98 @@
+[2016-11-03 09:34:01 INFO ] [main] truechain.net.NioClientManager - Server Start on port 8888:
+[2016-11-03 09:34:02 WARN ] [pool-2-thread-1] truechain.net.NioClientManager - Failed to connect with exception: Connection refused: no further information: {}
+java.net.ConnectException: Connection refused: no further information
+	at org.truechain.net.NioClientManager.handleKey(NioClientManager.java:129)
+	at org.truechain.net.NioClientManager.run(NioClientManager.java:208)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.runAndReset(FutureTask.java:308)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$301(ScheduledThreadPoolExecutor.java:180)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:294)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:744)
+[2016-11-03 09:34:02 INFO ] [pool-2-thread-1] truechain.core.Peer - connectionClosed
+[2016-11-03 09:34:04 INFO ] [main] truechain.net.NioClientManager - stoped service
+[2016-11-03 09:50:00 INFO ] [main] truechain.net.NioClientManager - Server Start on port 8888:
+[2016-11-03 09:50:01 WARN ] [pool-2-thread-1] truechain.net.NioClientManager - Failed to connect with exception: Connection refused: no further information: {}
+java.net.ConnectException: Connection refused: no further information
+	at org.truechain.net.NioClientManager.handleKey(NioClientManager.java:129)
+	at org.truechain.net.NioClientManager.run(NioClientManager.java:208)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.runAndReset(FutureTask.java:308)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$301(ScheduledThreadPoolExecutor.java:180)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:294)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:744)
+[2016-11-03 09:50:01 INFO ] [pool-2-thread-1] truechain.core.Peer - connectionClosed
+[2016-11-03 09:50:03 INFO ] [main] truechain.net.NioClientManager - stoped service
+[2016-11-03 09:56:02 INFO ] [main] truechain.net.NioClientManager - Server Start on port 8888:
+[2016-11-03 09:56:03 WARN ] [pool-2-thread-1] truechain.net.NioClientManager - Failed to connect with exception: Connection refused: no further information: {}
+java.net.ConnectException: Connection refused: no further information
+	at org.truechain.net.NioClientManager.handleKey(NioClientManager.java:129)
+	at org.truechain.net.NioClientManager.run(NioClientManager.java:208)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.runAndReset(FutureTask.java:308)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$301(ScheduledThreadPoolExecutor.java:180)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:294)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:744)
+[2016-11-03 09:56:03 INFO ] [pool-2-thread-1] truechain.core.Peer - connectionClosed
+[2016-11-03 09:56:04 INFO ] [main] truechain.net.NioClientManager - stoped service
+[2016-11-03 15:08:16 INFO ] [main] truechain.net.NioClientManager - Server Start on port 8888:
+[2016-11-03 15:08:17 WARN ] [pool-2-thread-1] truechain.net.NioClientManager - Failed to connect with exception: Connection refused: no further information: {}
+java.net.ConnectException: Connection refused: no further information
+	at org.truechain.net.NioClientManager.handleKey(NioClientManager.java:129)
+	at org.truechain.net.NioClientManager.run(NioClientManager.java:208)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.runAndReset(FutureTask.java:308)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$301(ScheduledThreadPoolExecutor.java:180)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:294)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:744)
+[2016-11-03 15:08:17 INFO ] [pool-2-thread-1] truechain.core.Peer - connectionClosed
+[2016-11-03 15:08:18 INFO ] [main] truechain.net.NioClientManager - stoped service
+[2016-11-03 15:09:57 INFO ] [main] truechain.net.NioClientManager - Server Start on port 8888:
+[2016-11-03 15:09:59 WARN ] [pool-2-thread-1] truechain.net.NioClientManager - Failed to connect with exception: Connection refused: no further information: {}
+java.net.ConnectException: Connection refused: no further information
+	at org.truechain.net.NioClientManager.handleKey(NioClientManager.java:129)
+	at org.truechain.net.NioClientManager.run(NioClientManager.java:208)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.runAndReset(FutureTask.java:308)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$301(ScheduledThreadPoolExecutor.java:180)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:294)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:744)
+[2016-11-03 15:09:59 INFO ] [pool-2-thread-1] truechain.core.Peer - connectionClosed
+[2016-11-03 15:10:00 INFO ] [main] truechain.net.NioClientManager - stoped service
+[2016-11-03 15:16:44 INFO ] [main] truechain.net.NioClientManager - Server Start on port 8888:
+[2016-11-03 15:16:45 WARN ] [pool-2-thread-1] truechain.net.NioClientManager - Failed to connect with exception: Connection refused: no further information: {}
+java.net.ConnectException: Connection refused: no further information
+	at org.truechain.net.NioClientManager.handleKey(NioClientManager.java:129)
+	at org.truechain.net.NioClientManager.run(NioClientManager.java:208)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.runAndReset(FutureTask.java:308)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$301(ScheduledThreadPoolExecutor.java:180)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:294)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:744)
+[2016-11-03 15:16:45 INFO ] [pool-2-thread-1] truechain.core.Peer - connectionClosed
+[2016-11-03 15:16:47 INFO ] [main] truechain.net.NioClientManager - stoped service
+[2016-11-03 16:53:39 INFO ] [main] truechain.net.NioClientManager - Server Start on port 8888:
+[2016-11-03 16:53:40 WARN ] [pool-2-thread-1] truechain.net.NioClientManager - Failed to connect with exception: Connection refused: no further information: {}
+java.net.ConnectException: Connection refused: no further information
+	at org.truechain.net.NioClientManager.handleKey(NioClientManager.java:129)
+	at org.truechain.net.NioClientManager.run(NioClientManager.java:208)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.runAndReset(FutureTask.java:308)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$301(ScheduledThreadPoolExecutor.java:180)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:294)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:744)
+[2016-11-03 16:53:40 INFO ] [pool-2-thread-1] truechain.core.Peer - connectionClosed
+[2016-11-03 16:53:42 INFO ] [main] truechain.net.NioClientManager - stoped service

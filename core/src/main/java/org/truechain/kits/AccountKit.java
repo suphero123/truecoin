@@ -21,11 +21,13 @@ import org.truechain.account.AccountTool;
 import org.truechain.account.Address;
 import org.truechain.core.Coin;
 import org.truechain.core.exception.MoneyNotEnoughException;
+import org.truechain.core.exception.VerificationException;
 import org.truechain.crypto.ECKey;
 import org.truechain.network.NetworkParameters;
 import org.truechain.store.StoreProvider;
 import org.truechain.store.TransactionStoreProvider;
 import org.truechain.transaction.RegisterTransaction;
+import org.truechain.utils.Hex;
 import org.truechain.utils.Utils;
 
 /**
@@ -51,7 +53,7 @@ public class AccountKit {
 	//节点管理器
 	private PeerKit peerKit;
 	
-	public AccountKit(NetworkParameters network, PeerKit peerKit) throws Exception {
+	public AccountKit(NetworkParameters network, PeerKit peerKit) throws IOException {
 		
 		this.network = Utils.checkNotNull(network);
 		this.peerKit = Utils.checkNotNull(peerKit);
@@ -269,12 +271,16 @@ public class AccountKit {
 //		
 //		RegisterTransaction tx1 = new RegisterTransaction(network, txContent);
 //		tx1.verfifyScript();
-		log.info("tx id : {}", tx.getHash());
+		
+		if(log.isDebugEnabled()) {
+			log.debug("accreg tx id : {}", tx.getHash());
+			log.debug("accreg tx content : {}", Hex.encode(tx.baseSerialize()));
+		}
 		peerKit.broadcastTransaction(tx);
 	}
 
 	//加载现有的帐户
-	public void loadAccount() throws Exception {
+	public void loadAccount() throws IOException {
 		this.accountList.clear();
 		
 		File accountDirFile = new File(accountDir);
@@ -303,7 +309,7 @@ public class AccountKit {
 				if(log.isDebugEnabled()) {
 					log.debug("load account {} success", account.getAddress().getBase58());
 				}
-			} catch (Exception e) {
+			} catch (VerificationException e) {
 				log.warn("read account file {} err", accountFile);
 				throw e;
 			} finally {
@@ -326,7 +332,7 @@ public class AccountKit {
 	/*
 	 * 初始化账户信息
 	 */
-	private synchronized void init() throws Exception {
+	private synchronized void init() throws IOException {
 		maybeCreateAccountDir();
 		loadAccount();
 	}
