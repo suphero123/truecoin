@@ -11,7 +11,7 @@ public class Hex {
 	 *            源字节数组
 	 * @return 编码后的字符串
 	 */
-	public static String encode(byte src[]) {
+	public static String encode(byte[] src) {
 		StringBuffer strbuf = new StringBuffer(src.length * 2);
 		int i;
 
@@ -28,8 +28,7 @@ public class Hex {
 	/**
 	 * 对16进制编码的字符串进行解码。
 	 * 
-	 * @param src
-	 *            源字串
+	 * @param hexString 源字串
 	 * @return 解码后的字节数组
 	 */
 	public static byte[] decode(String hexString) {

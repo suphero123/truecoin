@@ -16,7 +16,7 @@ public final class AccountTool {
 
 	/**
 	 * 生成一个新的私匙/公匙对
-	 * @return
+	 * @return ECKey
 	 */
 	public final static ECKey newPriKey() {
 		return new ECKey();
@@ -24,8 +24,8 @@ public final class AccountTool {
 	
 	/**
 	 * 生成一个新的地址
-	 * @param netword
-	 * @return
+	 * @param network
+	 * @return Address
 	 */
 	public final static Address newAddress(NetworkParameters network) {
 		return newAddress(network, Address.VERSION_DEFAULT);

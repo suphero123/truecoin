@@ -108,9 +108,8 @@ public class Address {
     /**
      * 根据hash160创建地址
      * @param network
-     * @param address
-     * @return
-     * @throws AddressFormatException
+     * @param version
+     * @return hash160
      */
     public static Address fromP2PKHash(NetworkParameters network, int version, byte[] hash160) {
         try {
@@ -130,7 +129,7 @@ public class Address {
      * 根据base58创建地址
      * @param network
      * @param address
-     * @return
+     * @return Address
      * @throws AddressFormatException
      */
     public static Address fromBase58(NetworkParameters network, String address) throws AddressFormatException {
@@ -156,7 +155,7 @@ public class Address {
     
     /**
      * 获取包含版本和效验码的地址内容
-     * @return
+     * @return byte[]
      */
     public byte[] getHash() {
     	//地址一共25字节
@@ -175,7 +174,7 @@ public class Address {
     
     /**
      * 获取包含版本和效验码的地址16进制编码
-     * @return
+     * @return String
      */
     public String getHashAsHex() {
         return Hex.encode(getHash());
@@ -183,7 +182,7 @@ public class Address {
 
     /**
      * 获取地址20字节的hash160
-     * @return
+     * @return byte[]
      */
     public byte[] getHash160() {
     	return Utils.checkNotNull(bytes);
@@ -191,7 +190,7 @@ public class Address {
     
     /**
      * 获取地址20字节的hash160 16进制编码
-     * @return
+     * @return String
      */
     public String getHash160AsHex() {
         return Hex.encode(getHash160());
@@ -203,9 +202,9 @@ public class Address {
 
     /**
      * 检查连接的网络是否允许当前地址前缀
-     * @param params
+     * @param network
      * @param version
-     * @return
+     * @return boolean
      */
     protected static boolean isAcceptableVersion(NetworkParameters network, int version) {
         for (int v : network.getAcceptableAddressCodes()) {

@@ -63,7 +63,7 @@ public class TransactionOutput implements Output {
 	/**
 	 * 获取交易的输出脚本
 	 * @param key
-	 * @return
+	 * @return RedeemData
 	 * @throws ScriptException
 	 */
 	public RedeemData getRedeemData(ECKey key) throws ScriptException {

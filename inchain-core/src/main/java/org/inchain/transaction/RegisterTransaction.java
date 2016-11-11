@@ -56,7 +56,7 @@ public class RegisterTransaction extends Transaction {
 	
 	/**
 	 * 反序列化交易的输出部分
-	 * @return
+	 * @return TransactionOutput
 	 */
 	protected TransactionOutput parseOutput() {
         //赎回脚本名的长度
@@ -80,8 +80,7 @@ public class RegisterTransaction extends Transaction {
 	
 	/**
 	 * 反序列化交易的输入部分
-	 * @return 
-	 * @return
+	 * @return Input
 	 */
 	protected <T extends Input> Input parseInput() {
 		if(account == null)
@@ -119,8 +118,8 @@ public class RegisterTransaction extends Transaction {
 	
 	/**
 	 * 更新交易签名
-	 * @param prikey1
-	 * @param prikey2
+	 * @param key1
+	 * @param key2
 	 */
 	public void calculateSignature(ECKey key1, ECKey key2) {
 		Script script = ScriptBuilder.createEmptyInputScript(Transaction.TYPE_REGISTER, account.getAddress().getHash160());

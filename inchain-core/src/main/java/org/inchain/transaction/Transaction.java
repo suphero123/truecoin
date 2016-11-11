@@ -146,7 +146,7 @@ public class Transaction extends Message {
 	
 	/**
 	 * 反序列化交易的输出部分
-	 * @return
+	 * @return TransactionOutput
 	 */
 	protected TransactionOutput parseOutput() {
 		TransactionOutput output = new TransactionOutput();
@@ -160,8 +160,7 @@ public class Transaction extends Message {
 	
 	/**
 	 * 反序列化交易的输入部分
-	 * @return 
-	 * @return
+	 * @return Input
 	 */
 	protected <T extends Input> Input parseInput() {
 		TransactionInput input = new TransactionInput();
@@ -277,7 +276,7 @@ public class Transaction extends Message {
 	 * @param key			密匙
 	 * @param redeemScript	上次交易的赎回脚本
 	 * @param hashType		hash类型
-	 * @return
+	 * @return TransactionSignature
 	 */
 	public TransactionSignature calculateSignature(int inputIndex, ECKey key, byte[] redeemScript, SigHash hashType) {
 		Sha256Hash hash = hashForSignature(inputIndex, redeemScript, hashType);
@@ -317,7 +316,7 @@ public class Transaction extends Message {
 	 * 输出到指定地址
 	 * @param value
 	 * @param address
-	 * @return
+	 * @return TransactionOutput
 	 */
 	public TransactionOutput addOutput(Coin value, Address address) {
         return addOutput(new TransactionOutput(this, value, address));
@@ -327,7 +326,7 @@ public class Transaction extends Message {
 	 * 输出到pubkey
 	 * @param value
 	 * @param pubkey
-	 * @return
+	 * @return TransactionOutput
 	 */
 	public TransactionOutput addOutput(Coin value, ECKey pubkey) {
         return addOutput(new TransactionOutput(this, value, pubkey));
@@ -337,7 +336,7 @@ public class Transaction extends Message {
 	 * 输出到脚本
 	 * @param value
 	 * @param script
-	 * @return
+	 * @return TransactionOutput
 	 */
     public TransactionOutput addOutput(Coin value, Script script) {
         return addOutput(new TransactionOutput(this, value, script.getProgram()));

@@ -7,9 +7,6 @@ public final class ToStringHelper {
   private ValueHolder holderTail = holderHead;
   private boolean omitNullValues = false;
 
-  /**
-   * Use {@link MoreObjects#toStringHelper(Object)} to create an instance.
-   */
   public ToStringHelper(String className) {
     this.className = Utils.checkNotNull(className);
   }

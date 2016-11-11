@@ -10,7 +10,7 @@ import org.inchain.transaction.Transaction.SigHash;
 import org.inchain.utils.Utils;
 
 /**
- * A TransactionSignature wraps an {@link org.ECKey.core.ECKey.ECDSASignature} and adds methods for handling
+ * A TransactionSignature wraps an {@link org.inchain.crypto.ECKey.ECDSASignature} and adds methods for handling
  * the additional SIGHASH mode byte that is used.
  */
 public class TransactionSignature extends ECKey.ECDSASignature {
@@ -134,14 +134,6 @@ public class TransactionSignature extends ECKey.ECDSASignature {
         return new TransactionSignature(super.toCanonicalised(), sigHashMode());
     }
 
-    /**
-     * Returns a decoded signature.
-     *
-     * @param requireCanonicalEncoding if the encoding of the signature must
-     * be canonical.
-     * @throws RuntimeException if the signature is invalid or unparseable in some way.
-     * @deprecated use {@link #decodeFromBitcoin(byte[], boolean, boolean} instead}.
-     */
     @Deprecated
     public static TransactionSignature decodeFromBitcoin(byte[] bytes,
                                                          boolean requireCanonicalEncoding) throws VerificationException {

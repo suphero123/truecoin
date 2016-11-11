@@ -21,7 +21,7 @@ import java.util.Map;
 
 /**
  * Various constants that define the assembly-like scripting language that forms part of the Bitcoin protocol.
- * See {@link org.bitcoinj.script.Script} for details. Also provides a method to convert them to a string.
+ * See {@link org.inchain.script.Script} for details. Also provides a method to convert them to a string.
  */
 public final class ScriptOpCodes {
     // push value

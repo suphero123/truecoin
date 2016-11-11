@@ -90,7 +90,7 @@ public class BlockStore extends BlockHeaderStore {
 	
 	/**
 	 * 计算区块hash
-	 * @return
+	 * @return Sha256Hash
 	 */
 	public Sha256Hash getHash() {
 		Sha256Hash id = Sha256Hash.twiceOf(baseSerialize());
@@ -104,7 +104,7 @@ public class BlockStore extends BlockHeaderStore {
 
 	/**
 	 * 计算区块的梅克尔树根
-	 * @return
+	 * @return Sha256Hash
 	 */
 	public Sha256Hash buildMerkleHash() {
 		

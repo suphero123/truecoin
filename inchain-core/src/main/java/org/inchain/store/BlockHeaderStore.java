@@ -103,7 +103,7 @@ public class BlockHeaderStore extends Store {
 	
 	/**
 	 * 获取区块头部大小
-	 * @return
+	 * @return int
 	 */
 	public int getHeaderSize() {
 		return 4 + 32 + 32 + 4 + 4 + new VarInt(txCount).getOriginalSizeInBytes();

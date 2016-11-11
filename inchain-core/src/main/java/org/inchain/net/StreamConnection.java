@@ -19,9 +19,6 @@ package org.inchain.net;
 import java.nio.ByteBuffer;
 
 /**
- * A generic handler which is used in {@link NioServer}, {@link NioClient} and {@link BlockingClient} to handle incoming
- * data streams.
- *
  * Used to be callet StreamParser.
  */
 public interface StreamConnection {

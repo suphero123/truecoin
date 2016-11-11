@@ -144,7 +144,7 @@ public class AccountKit {
 	 * @param to   base58的地址
 	 * @param money	发送金额
 	 * @param fee	手续费
-	 * @return
+	 * @return Future
 	 * @throws MoneyNotEnoughException
 	 */
 	public Future sendMoney(String to, Coin money, Coin fee) throws MoneyNotEnoughException {
@@ -172,7 +172,7 @@ public class AccountKit {
 	 * 初始化一个普通帐户
 	 * @param mgPw	帐户管理密码
 	 * @param trPw  帐户交易密码
-	 * @return
+	 * @return Address
 	 * @throws Exception 
 	 */
 	public Address createNewAccount(String mgPw, String trPw) throws Exception {

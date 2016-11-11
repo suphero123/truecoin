@@ -97,7 +97,7 @@ public class ECKey {
     /**
      * 根据私匙创建密码器
      * @param privKey
-     * @return
+     * @return ECKey
      */
     public static ECKey fromPrivate(BigInteger privKey) {
         return fromPrivate(privKey, true);
@@ -107,7 +107,7 @@ public class ECKey {
      * 根据私匙创建密码器，并选择是否压缩公匙
      * @param privKey
      * @param compressed
-     * @return
+     * @return ECKey
      */
     public static ECKey fromPrivate(BigInteger privKey, boolean compressed) {
 
@@ -118,7 +118,7 @@ public class ECKey {
     /**
      * 只有公匙
      * @param pubKey
-     * @return
+     * @return ECKey
      */
     public static ECKey fromPublicOnly(byte[] pubKey) {
 		return new ECKey(null, CURVE.getCurve().decodePoint(pubKey));
@@ -127,7 +127,7 @@ public class ECKey {
     /**
      * 只有公匙
      * @param pub
-     * @return
+     * @return ECKey
      */
     public static ECKey fromPublicOnly(ECPoint pub) {
 		return new ECKey(null, pub);
@@ -136,7 +136,7 @@ public class ECKey {
     /**
      * 根据私匙计算公匙
      * @param privKey
-     * @return
+     * @return ECKey
      */
     public static ECPoint publicPointFromPrivate(BigInteger privKey) {
         if (privKey.bitLength() > CURVE.getN().bitLength()) {
@@ -151,7 +151,7 @@ public class ECKey {
     
     /**
      * 获取公匙内容
-     * @return
+     * @return byte[]
      */
     public byte[] getPubKey(boolean compressed) {
         return pub.getEncoded(compressed);
@@ -159,7 +159,7 @@ public class ECKey {
     
     /**
      * 获取公匙内容,默认的公匙是压缩的
-     * @return
+     * @return byte[]
      */
     public byte[] getPubKey() {
     	return getPubKey(true);
@@ -167,7 +167,7 @@ public class ECKey {
     
     /**
      * 获取私匙对应的随机数
-     * @return
+     * @return BigInteger
      */
     public BigInteger getPrivKey() {
         if (priv == null)
@@ -177,7 +177,7 @@ public class ECKey {
     
     /**
      * 获取私匙的内容
-     * @return
+     * @return byte[]
      */
     public byte[] getPrivKeyBytes() {
         return Utils.bigIntegerToBytes(getPrivKey(), 32);
@@ -185,7 +185,7 @@ public class ECKey {
     
     /**
      * 获取私匙转16进制后的字符串
-     * @return
+     * @return String
      */
     public String getPrivateKeyAsHex() {
         return Hex.encode(getPrivKeyBytes());
@@ -193,7 +193,7 @@ public class ECKey {
 
     /**
      * 获取公匙转16进制后的字符串，压缩过的
-     * @return
+     * @return String
      */
     public String getPublicKeyAsHex() {
         return getPublicKeyAsHex(true);
@@ -202,7 +202,7 @@ public class ECKey {
     /**
      * 获取公匙转16进制后的字符串
      * @param compressed
-     * @return
+     * @return String
      */
 	public String getPublicKeyAsHex(boolean compressed) {
 		return Hex.encode(getPubKey(compressed));
@@ -254,7 +254,7 @@ public class ECKey {
      * 验证签名
      * @param hash
      * @param signature
-     * @return
+     * @return boolean
      */
 	public boolean verify(Sha256Hash hash, TransactionSignature signature) {
 		return ECKey.verify(hash.getBytes(), signature, getPubKey());
@@ -343,7 +343,7 @@ public class ECKey {
 	/**
 	 * 签名
 	 * @param hash
-	 * @return
+	 * @return ECDSASignature
 	 */
 	public ECDSASignature sign(Sha256Hash hash) {
 		return sign(hash, null);
@@ -376,7 +376,7 @@ public class ECKey {
 	
 	/**
 	 * 是否包含私匙
-	 * @return
+	 * @return boolean
 	 */
 	public boolean hasPrivKey() {
         return priv != null;

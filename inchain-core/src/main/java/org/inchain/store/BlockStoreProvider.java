@@ -103,7 +103,7 @@ public class BlockStoreProvider extends BaseStoreProvider {
 	/**
 	 * 获取区块头信息
 	 * @param hash
-	 * @return
+	 * @return BlockHeaderStore
 	 */
 	public BlockHeaderStore getHeader(byte[] hash) {
 		byte[] content = db.get(hash);
@@ -118,8 +118,8 @@ public class BlockStoreProvider extends BaseStoreProvider {
 	
 	/**
 	 * 获取区块头信息
-	 * @param hash
-	 * @return
+	 * @param height
+	 * @return BlockHeaderStore
 	 */
 	public BlockHeaderStore getHeaderByHeight(long height) {
 		byte[] heightBytes = new byte[4]; 
@@ -134,8 +134,8 @@ public class BlockStoreProvider extends BaseStoreProvider {
 
 	/**
 	 * 获取区块头信息
-	 * @param hash
-	 * @return
+	 * @param height
+	 * @return BlockStore
 	 */
 	public BlockStore getBlockByHeight(long height) {
 		return getBlockByHeader(getHeaderByHeight(height));
@@ -144,7 +144,7 @@ public class BlockStoreProvider extends BaseStoreProvider {
 	/**
 	 * 获取完整的区块信息
 	 * @param hash
-	 * @return
+	 * @return BlockStore
 	 */
 	public BlockStore getBlock(byte[] hash) {
 		
@@ -155,7 +155,7 @@ public class BlockStoreProvider extends BaseStoreProvider {
 	/**
 	 * 通过区块头获取区块的完整信息，主要是把交易详情查询出来
 	 * @param header
-	 * @return
+	 * @return BlockStore
 	 */
 	public BlockStore getBlockByHeader(BlockHeaderStore header) {
 		//交易列表
@@ -181,7 +181,7 @@ public class BlockStoreProvider extends BaseStoreProvider {
 	/**
 	 * 获取一笔交易
 	 * @param hash
-	 * @return
+	 * @return TransactionStore
 	 */
 	public TransactionStore getTransaction(byte[] hash) {
 		byte[] content = db.get(hash);
@@ -196,7 +196,7 @@ public class BlockStoreProvider extends BaseStoreProvider {
 	
 	/**
 	 * 获取最新块的头信息
-	 * @return
+	 * @return BlockHeaderStore
 	 */
 	public BlockHeaderStore getBestBlockHeader() {
 		blockLock.lock();
@@ -216,7 +216,7 @@ public class BlockStoreProvider extends BaseStoreProvider {
 	
 	/**
 	 * 获取最新区块的完整信息
-	 * @return
+	 * @return BlockStore
 	 */
 	public BlockStore getBestBlock() {
 		//获取最新的区块

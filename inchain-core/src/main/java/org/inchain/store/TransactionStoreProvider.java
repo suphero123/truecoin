@@ -72,7 +72,7 @@ public class TransactionStoreProvider extends ChainstateStoreProvider {
 	/**
 	 * 获取地址的最新余额和未确认的余额
 	 * @param hash160
-	 * @return
+	 * @return Coin[]
 	 */
 	public Coin[] getBalanceAndUnconfirmedBalance(byte[] hash160) {
 		Coin balance = Coin.ZERO;
