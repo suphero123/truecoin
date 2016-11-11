@@ -14,7 +14,7 @@
 	<artifactId>inchain-tools</artifactId>
 	<version>0.1</version>
 
-    <name>tools</name>
+    <name>inchain-tools</name>
     <description>A Java inchain library</description>
 
     <packaging>jar</packaging>
