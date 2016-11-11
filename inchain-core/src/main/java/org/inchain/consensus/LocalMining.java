@@ -122,7 +122,7 @@ public final class LocalMining implements Mining {
 		blockStore.setVersion(network.getProtocolVersionNum(ProtocolVersion.CURRENT));
 		blockStore.setTxCount(transactionList.size());
 		blockStore.setTxs(transactionList);
-		blockStore.setMerkleHash(blockStore.getMerkleHash());
+		blockStore.setMerkleHash(blockStore.buildMerkleHash());
 
 		try {
 			blockStoreProvider.saveBlock(blockStore);
@@ -167,6 +167,12 @@ public final class LocalMining implements Mining {
 
 	@Override
 	public void start() {
+		try {
+			Thread.sleep(10000l);
+		} catch (InterruptedException e) {
+			log.error("mining err", e);
+		}
+		
 		//这里需要引入共识机制来确定该由谁来打包交易
 		//TODO
 		

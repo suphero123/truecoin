@@ -38,7 +38,7 @@ public class RegisterAccount {
 		
 		AccountKit accountKit = new AccountKit(network, peerKit);
 		try {
-			Thread.sleep(2000l);
+			Thread.sleep(1000l);
 			if(accountKit.getAccountList().isEmpty()) {
 				accountKit.createNewAccount("123456", "0123456");
 			}

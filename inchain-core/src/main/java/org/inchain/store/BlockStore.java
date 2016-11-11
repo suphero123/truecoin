@@ -106,7 +106,7 @@ public class BlockStore extends BlockHeaderStore {
 	 * 计算区块的梅克尔树根
 	 * @return
 	 */
-	public Sha256Hash getMerkleHash() {
+	public Sha256Hash buildMerkleHash() {
 		
 		List<byte[]> tree = new ArrayList<byte[]>();
         for (TransactionStore t : txs) {

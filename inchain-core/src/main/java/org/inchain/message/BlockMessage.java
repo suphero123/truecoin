@@ -85,6 +85,10 @@ public class BlockMessage extends Message {
 		length = cursor;
 	}
 
+	public BlockStore getBlockStore() {
+		return blockStore;
+	}
+	
 	@Override
 	public String toString() {
 		return "BlockMessage [blockStore=" + blockStore + "]";

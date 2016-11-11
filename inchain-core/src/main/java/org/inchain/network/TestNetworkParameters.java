@@ -92,7 +92,7 @@ public class TestNetworkParameters extends NetworkParameters {
 		gengsisBlock.setTxs(txs);
 		gengsisBlock.setTxCount(txs.size());
 		
-		Sha256Hash merkleHash = gengsisBlock.getMerkleHash();
+		Sha256Hash merkleHash = gengsisBlock.buildMerkleHash();
 		
 		if(log.isDebugEnabled()) {
 			log.debug("the gengsis block merkle hash is : {}", merkleHash);

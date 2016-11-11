@@ -25,7 +25,7 @@ public class DefaultMessageProcessFactory implements MessageProcessFactory {
 		} else if(message instanceof VersionMessage) {
 			return new VersionMessageProcess();
 		} else if(message instanceof Transaction) {
-			return new TransactionMessageProcess();
+			return new TransactionMessageProcess(message.getNetwork());
 		} else if(message instanceof BlockMessage) {
 			return new BlockMessageProcess(message.getNetwork());
 		} else {

@@ -118,7 +118,7 @@ public class MakeGengsisBlock {
 		
 		gengsisBlock.setTxs(txs);
 		
-		Sha256Hash merkleHash = gengsisBlock.getMerkleHash();
+		Sha256Hash merkleHash = gengsisBlock.buildMerkleHash();
 		System.out.println(merkleHash);
 		Utils.checkState("86c346bda7710779081dd0a89205ad72240c20da44578362d62076a683e94533".equals(Hex.encode(merkleHash.getBytes())), "the gengsis block merkle hash is error");
 		

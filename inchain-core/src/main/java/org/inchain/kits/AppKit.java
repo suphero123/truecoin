@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.inchain.Configure;
 import org.inchain.consensus.LocalMining;
 import org.inchain.core.exception.VerificationException;
+import org.inchain.listener.Listener;
 import org.inchain.network.NetworkParameters;
 import org.inchain.store.BlockHeaderStore;
 import org.inchain.store.BlockStore;
@@ -23,6 +24,10 @@ public class AppKit {
 	
 	private final BlockStoreProvider blockStoreProvider;
 	private final NetworkParameters network;
+	
+	//初始化监听器
+	private Listener initListener;
+	
 	//挖矿程序
 	private LocalMining mining;
 	//结点管理
@@ -62,6 +67,10 @@ public class AppKit {
 		initAccountKit();
 		//初始化挖矿
 		initMining();
+		
+		if(initListener != null) {
+			initListener.onComplete();
+		}
 	}
 	
 	//初始化节点管理器
@@ -77,8 +86,10 @@ public class AppKit {
 
 	//初始化挖矿
 	private void initMining() {
-		mining = new LocalMining(network, accountKit, peerKit);
-		mining.start();
+		if(Configure.MINING) {
+			mining = new LocalMining(network, accountKit, peerKit);
+			mining.start();
+		}
 	}
 
 	/**
@@ -128,5 +139,13 @@ public class AppKit {
 			//新增
 			blockStoreProvider.saveBlock(gengsisBlock);
 		}
+	}
+	
+	public AccountKit getAccountKit() {
+		return accountKit;
+	}
+	
+	public void setInitListener(Listener initListener) {
+		this.initListener = initListener;
 	}
 }

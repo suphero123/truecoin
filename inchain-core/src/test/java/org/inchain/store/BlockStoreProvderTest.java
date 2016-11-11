@@ -87,7 +87,7 @@ public class BlockStoreProvderTest {
 		testBlock.setTxs(txs);
 		testBlock.setTxCount(txs.size());
 		
-		Sha256Hash merkleHash = testBlock.getMerkleHash();
+		Sha256Hash merkleHash = testBlock.buildMerkleHash();
 		testBlock.setMerkleHash(merkleHash);
 		
 		System.out.println(testBlock.getHash());

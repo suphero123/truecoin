@@ -21,6 +21,12 @@ public final class Configure {
 	private static Logger log = LoggerFactory.getLogger(Configure.class);
 	
 	private static final String CONFIG_FILE = "config.conf";
+
+	/**
+	 * 是否挖矿
+	 */
+	@Property(key="mining", defaultValue="false")
+	public static boolean MINING;
 	
 	/**
 	 * 最大允许节点连接数

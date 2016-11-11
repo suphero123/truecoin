@@ -185,6 +185,9 @@ public class BlockStoreProvider extends BaseStoreProvider {
 	 */
 	public TransactionStore getTransaction(byte[] hash) {
 		byte[] content = db.get(hash);
+		if(content == null) {
+			return null;
+		}
 		TransactionStore store = new TransactionStore(network, content);
 		store.setKey(hash);
 		

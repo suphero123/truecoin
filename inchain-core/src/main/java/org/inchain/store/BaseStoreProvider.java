@@ -38,6 +38,14 @@ public abstract class BaseStoreProvider implements StoreProvider {
 	protected abstract byte[] toByte(Store store);
 	protected abstract Store pase(byte[] content);
 	
+	public void put(byte[] key, byte[] value) {
+		db.put(key, value);
+	}
+	
+	public byte[] getBytes(byte[] key) {
+		return db.get(key);
+	}
+	
 	@Override
 	public void put(Store store) {
 		byte[] content = toByte(store);
