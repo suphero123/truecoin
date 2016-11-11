@@ -34,7 +34,7 @@ public abstract class NetworkParameters {
 	
 	/**
      * Return the default serializer for this network. This is a shared serializer.
-     * @return 
+     * @return MessageSerializer
      */
     public final MessageSerializer getDefaultSerializer() {
         // Construct a default serializer if we don't have one
@@ -85,7 +85,7 @@ public abstract class NetworkParameters {
 	
 	/**
 	 * 得到创世块
-	 * @return
+	 * @return BlockStore
 	 */
 	public abstract BlockStore getGengsisBlock();
 
@@ -105,7 +105,6 @@ public abstract class NetworkParameters {
 		return 1000;
 	}
 	
-	/** First byte of a base58 encoded dumped private key. See {@link org.bitcoinj.core.DumpedPrivateKey}. */
     public int getDumpedPrivateKeyHeader() {
         return dumpedPrivateKeyHeader;
     }

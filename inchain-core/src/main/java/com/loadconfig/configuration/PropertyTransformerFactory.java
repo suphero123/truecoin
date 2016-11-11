@@ -45,16 +45,16 @@ import com.loadconfig.util.ClassUtils;
 public class PropertyTransformerFactory
 {
 	/**
-	 * Returns property transformer or throws {@link com.week08.loadConfig.configuration.aionemu.commons.configuration.TransformationException} if can't
+	 * Returns property transformer or throws {@link com.loadconfig.configuration.TransformationException} if can't
 	 * create new one.
 	 * 
 	 * @param clazzToTransform
 	 *            Class that will is going to be transformed
 	 * @param tc
-	 *            {@link com.aionemu.commons.configuration.PropertyTransformer} class that will be instantiated
+	 *            {@link com.loadconfig.configuration.PropertyTransformer} class that will be instantiated
 	 * @return instance of PropertyTransformer
 	 * @throws TransformationException
-	 *             if can't instantiate {@link com.aionemu.commons.configuration.PropertyTransformer}
+	 *             if can't instantiate {@link com.loadconfig.configuration.PropertyTransformer}
 	 */
 	@SuppressWarnings("rawtypes")
 	public static PropertyTransformer newTransformer(Class clazzToTransform, Class<? extends PropertyTransformer> tc)

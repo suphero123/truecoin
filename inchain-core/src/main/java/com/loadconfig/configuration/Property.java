@@ -34,7 +34,7 @@ import java.lang.annotation.Target;
 public @interface Property
 {
 	/**
-	 * This string shows to {@link com.week08.loadConfig.configuration.aionemu.commons.configuration.ConfigurableProcessor} that init value of the
+	 * This string shows to {@link com.loadconfig.configuration.ConfigurableProcessor} that init value of the
 	 * object should not be overriden.
 	 */
 	public static final String	DEFAULT_VALUE	= "DO_NOT_OVERWRITE_INITIALIAZION_VALUE";
@@ -50,20 +50,20 @@ public @interface Property
 	 * PropertyTransformer to use.<br>
 	 * List of automaticly transformed types:<br>
 	 * <ul>
-	 * <li>{@link Boolean} and boolean by {@link com.week08.loadConfig.configuration.transformers.aionemu.commons.configuration.transformers.BooleanTransformer}</li>
-	 * <li>{@link Byte} and byte by {@link com.week08.loadConfig.configuration.transformers.aionemu.commons.configuration.transformers.ByteTransformer}</li>
-	 * <li>{@link Character} and char by {@link com.week08.loadConfig.configuration.transformers.aionemu.commons.configuration.transformers.CharTransformer}</li>
-	 * <li>{@link Short} and short by {@link com.week08.loadConfig.configuration.transformers.aionemu.commons.configuration.transformers.ShortTransformer}</li>
-	 * <li>{@link Integer} and int by {@link com.week08.loadConfig.configuration.transformers.aionemu.commons.configuration.transformers.IntegerTransformer}</li>
-	 * <li>{@link Float} and float by {@link com.week08.loadConfig.configuration.transformers.aionemu.commons.configuration.transformers.FloatTransformer}</li>
-	 * <li>{@link Long} and long by {@link com.week08.loadConfig.configuration.transformers.aionemu.commons.configuration.transformers.LongTransformer}</li>
-	 * <li>{@link Double} and double by {@link com.week08.loadConfig.configuration.transformers.aionemu.commons.configuration.transformers.DoubleTransformer}</li>
-	 * <li>{@link String} by {@link com.week08.loadConfig.configuration.transformers.aionemu.commons.configuration.transformers.StringTransformer}</li>
-	 * <li>{@link Enum} and enum by {@link com.week08.loadConfig.configuration.transformers.aionemu.commons.configuration.transformers.EnumTransformer}</li>
-	 * <li>{@link java.io.File} by {@link com.week08.loadConfig.configuration.transformers.aionemu.commons.configuration.transformers.FileTransformer}</li>
+	 * <li>{@link Boolean} and boolean by {@link com.loadconfig.configuration.transformers.BooleanTransformer}</li>
+	 * <li>{@link Byte} and byte by {@link com.loadconfig.configuration.transformers.ByteTransformer}</li>
+	 * <li>{@link Character} and char by {@link com.loadconfig.configuration.transformers.CharTransformer}</li>
+	 * <li>{@link Short} and short by {@link com.loadconfig.configuration.transformers.ShortTransformer}</li>
+	 * <li>{@link Integer} and int by {@link com.loadconfig.configuration.transformers.IntegerTransformer}</li>
+	 * <li>{@link Float} and float by {@link com.loadconfig.configuration.transformers.FloatTransformer}</li>
+	 * <li>{@link Long} and long by {@link com.loadconfig.configuration.transformers.LongTransformer}</li>
+	 * <li>{@link Double} and double by {@link com.loadconfig.configuration.transformers.DoubleTransformer}</li>
+	 * <li>{@link String} by {@link com.loadconfig.configuration.transformers.StringTransformer}</li>
+	 * <li>{@link Enum} and enum by {@link com.loadconfig.configuration.transformers.EnumTransformer}</li>
+	 * <li>{@link java.io.File} by {@link com.loadconfig.configuration.transformers.FileTransformer}</li>
 	 * <li>{@link java.net.InetSocketAddress} by
-	 * {@link com.week08.loadConfig.configuration.transformers.aionemu.commons.configuration.transformers.InetSocketAddressTransformer}</li>
-	 * <li>{@link java.util.regex.Pattern} by {@link com.week08.loadConfig.configuration.transformers.aionemu.commons.configuration.transformers.PatternTransformer}
+	 * {@link com.loadconfig.configuration.transformers.InetSocketAddressTransformer}</li>
+	 * <li>{@link java.util.regex.Pattern} by {@link com.loadconfig.configuration.transformers.PatternTransformer}
 	 * </ul>
 	 * <p/>
 	 * If your value is one of this types - just leave this field empty

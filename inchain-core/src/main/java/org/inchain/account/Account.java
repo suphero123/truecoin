@@ -58,7 +58,7 @@ public class Account {
 	
 	/**
 	 * 序列化帐户信息
-	 * @return
+	 * @return byte[]
 	 * @throws IOException
 	 */
 	public final byte[] serialize() throws IOException  {
@@ -96,7 +96,7 @@ public class Account {
 	/**
 	 * 反序列化
 	 * @param datas
-	 * @return
+	 * @return Account
 	 */
 	public static Account parse(byte[] datas, NetworkParameters network) {
 		Account account = new Account();
@@ -181,7 +181,7 @@ public class Account {
 
 	/**
 	 * 帐户信息大小
-	 * @return
+	 * @return int
 	 */
 	public final int size() {
 		int size = 1+1+20; //状态+类型+hash160
@@ -206,7 +206,7 @@ public class Account {
 
 	/**
 	 * 签名交易
-	 * @return
+	 * @return Script
 	 */
 	public Script signTreade(String pwd) {
 		
