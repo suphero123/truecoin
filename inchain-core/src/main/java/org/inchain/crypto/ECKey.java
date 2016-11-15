@@ -180,7 +180,7 @@ public class ECKey {
      * @return byte[]
      */
     public byte[] getPrivKeyBytes() {
-        return Utils.bigIntegerToBytes(getPrivKey(), 32);
+        return getPrivKey().toByteArray();
     }
     
     /**
