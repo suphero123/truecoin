@@ -66,6 +66,17 @@ public final class Configure {
 	 */
 	public static String DATA_TRANSACTION;
 	
+	/*************  RPC 相关配置  begin  *****************/
+	
+	/**
+	 * RPC 端口
+	 */
+	@Property(key="rpc.server.port", defaultValue="8632")
+	public static int RPC_SERVER_PORT;
+	
+	/*************  RPC 相关配置   end  *****************/
+	
+	
 	static {
 		load();
 		DATA_ACCOUNT = DATA_DIR+File.separator+"account";
