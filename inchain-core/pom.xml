@@ -12,10 +12,9 @@
     </parent>
     
 	<artifactId>inchain-core</artifactId>
-	<version>0.1</version>
-	
     <name>core</name>
-    <description>A Java inchain library</description>
+	<version>${inchain.version}</version>
+    <description>A Java Inchain Library</description>
 
     <packaging>jar</packaging>
 
@@ -23,142 +22,131 @@
 
     <developers>
         <developer>
-            <name>The inchain team</name>
+            <name>The Inchain Team</name>
             <email>dev@inchain.org</email>
         </developer>
     </developers>
-
-    <profiles>
-        <profile>
-            <id>update-protobuf</id>
-            <activation>
-                <property>
-                    <name>updateProtobuf</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>compile-protoc</id>
-                                <phase>generate-sources</phase>
-                                <configuration>
-                                    <tasks>
-                                        <path id="proto.path">
-                                            <fileset dir="src">
-                                                <include name="**/*.conf"/>
-                                            </fileset>
-                                        </path>
-                                        <pathconvert pathsep=" " property="proto.files" refid="proto.path"/>
-                                        <exec executable="protoc" failonerror="true">
-                                            <arg value="--java_out=${project.basedir}/src/main/java"/>
-                                            <arg value="-I${project.basedir}/src"/>
-                                            <arg line="${proto.files}"/>
-                                        </exec>
-                                    </tasks>
-                                </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>no-network</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <excludes>
-                                <exclude>**/core/PeerTest.java</exclude>
-                                <exclude>**/core/TransactionBroadcastTest.java</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
+    
     <build>
         <plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<configuration>
-					<encoding>UTF-8</encoding>
-				</configuration>
-			</plugin>
-			
-			<plugin>  
-				<groupId>org.apache.maven.plugins</groupId>  
-				<artifactId>maven-compiler-plugin</artifactId>  
-				<version>2.3.2</version>  
-			</plugin> 
-			
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-				<source>1.6</source>
-				<target>1.6</target>
-					<encoding>UTF-8</encoding>
-				</configuration>
-			</plugin>
-		</plugins>
-    </build>
+        	<!-- 生成api doc 工具 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>  
+			                <additionalparam>-Xdoclint:none</additionalparam>  
+			            </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
+			<!-- 把所有依赖打进一个包里 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.4.3</version>
+                <executions>
+                    <!-- Create the bundled JAR, it's easier for some people -->
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <minimizeJar>false</minimizeJar>
+                            <filters>
+                                <filter>
+                                    <!-- exclude signatures, the bundling process breaks them for some reason -->
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <shadedClassifierName>bundled</shadedClassifierName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <!-- 单元测试覆盖率 -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.7.5.201505241946</version>
+                <configuration>
+                    <excludes>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>pre-unit-test</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <destFile>${project.build.directory}/coverage-reports/jacoco.exec</destFile>
+                            <propertyName>surefireArgLine</propertyName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>post-unit-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${project.build.directory}/coverage-reports/jacoco.exec</dataFile>
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>default-report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <!--回归测试插件-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.19.1</version>
+                <configuration>
+                    <argLine>-Xmx1024m ${surefireArgLine}</argLine>
+                    <runOrder>alphabetical</runOrder>
+                    <systemProperties>
+                        <property>
+                            <name>java.util.logging.config.file</name>
+                            <value>src/test/resources/log4j.xml</value>
+                        </property>
+                    </systemProperties>
+                </configuration>
+            </plugin>
+            
+        </plugins>
+    </build>
+    
     <dependencies>
+    	<!-- 单元测试包 -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-		    <groupId>org.slf4j</groupId>
-		    <artifactId>slf4j-api</artifactId>
-		    <version>1.7.21</version>
-		</dependency>
-		<dependency>
-	    	<groupId>org.slf4j</groupId>
-		    <artifactId>slf4j-log4j12</artifactId>
-		    <version>1.7.21</version>
-		</dependency>
-		<dependency>
-		    <groupId>log4j</groupId>
-		    <artifactId>log4j</artifactId>
-		    <version>1.2.17</version>
-		</dependency>
-		<dependency>
-		    <groupId>commons-logging</groupId>
-		    <artifactId>commons-logging</artifactId>
-		    <version>1.2</version>
-		</dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.5.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.madgag.spongycastle</groupId>
-            <artifactId>core</artifactId>
-            <version>1.51.0.0</version>
-        </dependency>
-		<dependency>
-		    <groupId>org.iq80.leveldb</groupId>
-		    <artifactId>leveldb</artifactId>
-		    <version>0.9</version>
-		</dependency>
-
     </dependencies>
 </project>
