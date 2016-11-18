@@ -4,7 +4,8 @@
 3 进入inchain-core目录，运行install.bat
 4 进入inchain(父级目录)，运行命令 mvn eclipse:eclipse
 5 导入项目到eclipse里
+6 设置M2_REPO
 
-注：3-5步也可运行deploy.bat代替
+注：3-4步也可运行deploy-eclipse.bat代替
 
 更多资料请到 http://bbs.inchain.org/forumdisplay.php?fid=7 查阅
