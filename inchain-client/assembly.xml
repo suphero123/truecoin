@@ -4,12 +4,15 @@
 
     <id>${inchain.version}-bin</id>
     
+    <!-- 压缩格式 -->
     <formats>
         <format>tar.gz</format>
     </formats>
     
+    <!-- 压缩到哪个目录，这里为空代表根目录 -->
     <baseDirectory></baseDirectory>
     
+    <!-- 复制所以依赖jar包到lib目录下 -->
     <dependencySets>
         <dependencySet>
             <useProjectArtifact>false</useProjectArtifact>
@@ -18,6 +21,7 @@
         </dependencySet>
     </dependencySets>
     
+    <!-- 把scripts下的脚本复制到打包后的bin目录下，把resources下的配置文件复制到打包后的conf目录下 -->
     <fileSets>
         <fileSet>
             <directory>${basedir}/scripts</directory>
@@ -31,6 +35,8 @@
             <outputDirectory>conf</outputDirectory>
         </fileSet>
     </fileSets>
+    
+    <!-- 复制该打包项目本身的jar到lib下 -->
     <files>
         <file>
             <source>${basedir}/target/inchain-client-${inchain.version}.jar</source>
